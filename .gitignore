@@ -1,3 +1,9 @@
 # System files
 .DS_Store
+.angular
+.gradle
+.idea
+.vscode
 Thumbs.db
+build
+node_modules
