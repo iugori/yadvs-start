@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.dto;
+package ro.iugori.yadvs.model.domain;
 
 public enum PollStatus {
 

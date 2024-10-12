@@ -1,5 +1,7 @@
 package ro.iugori.yadvs.dto;
 
+import ro.iugori.yadvs.model.domain.PollStatus;
+
 public class Poll {
 
     private Long id;
