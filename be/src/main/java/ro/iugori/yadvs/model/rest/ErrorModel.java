@@ -20,7 +20,7 @@ public class ErrorModel {
     }
 
     public void setCode(ErrorCode errCode) {
-        code = String.format("%d (%s)", errCode.code, errCode.name());
+        code = String.format("%d (%s)", errCode.code, errCode.name().toLowerCase());
     }
 
 }

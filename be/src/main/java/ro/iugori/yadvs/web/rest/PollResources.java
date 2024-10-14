@@ -1,11 +1,12 @@
 package ro.iugori.yadvs.web.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Validator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.config.REST;
-import ro.iugori.yadvs.delegates.rest.ErrorBuilder;
+import ro.iugori.yadvs.delegate.rest.ErrorBuilder;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.rest.ErrorResponse;
 import ro.iugori.yadvs.service.PollService;
@@ -25,11 +26,11 @@ public class PollResources {
     }
 
     @PostMapping
-    public ResponseEntity<?> postPoll(@RequestBody Poll poll) {
+    public ResponseEntity<?> postPoll(HttpServletRequest request, @RequestBody Poll poll) {
         var validResult = validator.validate(poll);
         if (!validResult.isEmpty()) {
             var errors = new ErrorResponse();
-            validResult.forEach(constraint -> errors.add(ErrorBuilder.of(constraint)));
+            validResult.forEach(constraint -> errors.add(ErrorBuilder.of(request, constraint)));
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(poll, HttpStatus.CREATED);
