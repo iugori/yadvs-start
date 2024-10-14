@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = URIs.PATH_POLLS)
+@InjectCallContext
 public class PollResources {
 
     private final Validator validator;
@@ -28,7 +29,6 @@ public class PollResources {
     }
 
     @PostMapping
-    @InjectCallContext
     public ResponseEntity<?> postPoll(RestContext restCtx, @RequestBody Poll poll) {
         var validResult = validator.validate(poll);
         if (!validResult.isEmpty()) {
@@ -41,7 +41,7 @@ public class PollResources {
     }
 
     @GetMapping
-    public ResponseEntity<List<Poll>> getPolls() {
+    public ResponseEntity<List<Poll>> getPolls(RestContext restCtx) {
         var polls = pollService.findPolls().orElse(List.of());
         return polls.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)

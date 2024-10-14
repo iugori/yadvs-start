@@ -13,13 +13,13 @@ import ro.iugori.yadvs.delegate.ctx.RestContext;
 @Component
 public class CallContextAspect {
 
-    @Around("@annotation(InjectCallContext)")
-    public Object injectRestContext(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(InjectCallContext) || @within(InjectCallContext)")
+    public Object injectCallContext(ProceedingJoinPoint joinPoint) throws Throwable {
         var args = joinPoint.getArgs();
         var parameterTypes = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();
         for (var i = 0; i < args.length; ++i) {
             var parameterClass = parameterTypes[i];
-            if (RestContext.class.equals(parameterClass)) {
+            if (RestContext.class.equals(parameterClass) && args[i] == null) {
                 var attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                 var callContext = new RestContext(attributes.getRequest());
                 args[i] = callContext;
