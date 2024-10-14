@@ -2,25 +2,29 @@ package ro.iugori.yadvs.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import ro.iugori.yadvs.model.domain.PollStatus;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Poll implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+public class Poll {
 
     private Long id;
 
     @NotNull
     @NotEmpty
+    @Size(max = 200)
     private String name;
 
     @NotNull
     @NotEmpty
+    @Size(max = 2000)
     private String description;
 
     private PollStatus status;
@@ -31,59 +35,4 @@ public class Poll implements Serializable {
 
     private LocalDateTime end;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public PollStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PollStatus status) {
-        this.status = status;
-    }
-
-    public boolean isMultiOption() {
-        return multiOption;
-    }
-
-    public void setMultiOption(boolean multiOption) {
-        this.multiOption = multiOption;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public void setStart(LocalDateTime start) {
-        this.start = start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
-    }
-
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
-    }
 }

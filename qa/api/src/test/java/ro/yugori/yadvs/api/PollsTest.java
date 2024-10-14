@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.dto.Poll;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class PollsTest {
 
@@ -15,11 +17,11 @@ public class PollsTest {
 
     @Test
     void postPollNull() {
-        var poll = new Poll();
-
         given().baseUri(Setup.BASE_URL)
-                .when().contentType(MimeType.Application.JSON).body(poll).post(RESOURCE_URL)
-                .then().statusCode(HttpStatus.SC_BAD_REQUEST);
+                .when().contentType(MimeType.Application.JSON).body(new Poll()).post(RESOURCE_URL)
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("errors", hasSize(4))
+                .body("trace", notNullValue());
     }
 
     @Test

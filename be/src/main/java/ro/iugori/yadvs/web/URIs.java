@@ -1,6 +1,6 @@
-package ro.iugori.yadvs.config;
+package ro.iugori.yadvs.web;
 
-public class REST {
+public class URIs {
 
     public static final String ROOT = "/yadvs/rest/v1";
 
