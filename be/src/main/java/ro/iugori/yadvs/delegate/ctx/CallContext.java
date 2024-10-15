@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public abstract class CallContext {
+public class CallContext {
 
     public static String nextUuid() {
         return FriendlyId.toFriendlyId(UUID.randomUUID());
@@ -22,7 +22,7 @@ public abstract class CallContext {
     @Getter
     private final Logger logger;
 
-    protected CallContext(Logger logger) {
+    public CallContext(Logger logger) {
         this.logger = logger;
     }
 

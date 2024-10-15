@@ -29,4 +29,6 @@ public class PollService {
         return entity;
     }
 
+    public void deletePoll(long id) {
+    }
 }

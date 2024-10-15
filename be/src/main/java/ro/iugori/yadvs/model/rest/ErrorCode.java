@@ -2,9 +2,12 @@ package ro.iugori.yadvs.model.rest;
 
 public enum ErrorCode {
 
-    GENERIC(-100),
-    NOT_NULL(-200),
-    NOT_EMPTY(-201),
+    GENERIC(-1000),
+    API_ERROR(-1001),
+    NOT_NULL(-2000),
+    NOT_EMPTY(-2001),
+
+    CONVERSION_ERROR(-3000),
 
     ;
 

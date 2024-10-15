@@ -25,6 +25,13 @@ public class PollsTest {
     }
 
     @Test
+    void deletePollInvalidId() {
+        given().baseUri(Setup.BASE_URL)
+                .when().delete(RESOURCE_URL)
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
     void getPollsNoneFound() {
         given().baseUri(Setup.BASE_URL)
                 .when().get(RESOURCE_URL)

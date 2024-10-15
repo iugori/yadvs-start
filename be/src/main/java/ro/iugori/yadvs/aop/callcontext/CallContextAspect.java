@@ -5,8 +5,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
 
 @Aspect
@@ -16,13 +14,11 @@ public class CallContextAspect {
     @Around("@annotation(InjectCallContext) || @within(InjectCallContext)")
     public Object injectCallContext(ProceedingJoinPoint joinPoint) throws Throwable {
         var args = joinPoint.getArgs();
-        var parameterTypes = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();
+        var paramTypes = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();
         for (var i = 0; i < args.length; ++i) {
-            var parameterClass = parameterTypes[i];
+            var parameterClass = paramTypes[i];
             if (RestContext.class.equals(parameterClass) && args[i] == null) {
-                var attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-                var callContext = new RestContext(attributes.getRequest());
-                args[i] = callContext;
+                args[i] = new RestContext();
                 break;
             }
         }
