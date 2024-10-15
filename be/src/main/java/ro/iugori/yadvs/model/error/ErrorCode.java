@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.model.rest;
+package ro.iugori.yadvs.model.error;
 
 public enum ErrorCode {
 
@@ -8,6 +8,7 @@ public enum ErrorCode {
     NOT_EMPTY(-2001),
 
     CONVERSION_ERROR(-3000),
+   VALUE_CONFLICT(-3100),
 
     ;
 

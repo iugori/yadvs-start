@@ -1,5 +1,6 @@
 package ro.iugori.yadvs.util.mapping;
 
+import org.apache.commons.lang3.BooleanUtils;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.entity.PollEntity;
 
@@ -10,6 +11,7 @@ public class PollMapper {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
+        entity.setMultiOption(BooleanUtils.toBoolean(dto.getMultiOption()));
     }
 
     public static void patch(Poll dto, PollEntity entity) {
@@ -25,6 +27,9 @@ public class PollMapper {
         if (dto.getStatus() != null) {
             entity.setStatus(dto.getStatus());
         }
+        if (dto.getMultiOption() != null) {
+            entity.setMultiOption(dto.getMultiOption());
+        }
     }
 
     public static Poll dtoFrom(PollEntity entity) {
@@ -33,6 +38,7 @@ public class PollMapper {
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
         dto.setStatus(entity.getStatus());
+        dto.setMultiOption(entity.isMultiOption());
         return dto;
     }
 

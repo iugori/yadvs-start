@@ -29,7 +29,7 @@ public class Poll {
 
     private PollStatus status;
 
-    private boolean multiOption;
+    private Boolean multiOption;
 
     private LocalDateTime start;
 

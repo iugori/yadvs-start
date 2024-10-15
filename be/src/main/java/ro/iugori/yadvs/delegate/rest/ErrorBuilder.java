@@ -3,15 +3,19 @@ package ro.iugori.yadvs.delegate.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.metadata.ConstraintDescriptor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.delegate.ctx.CallContext;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
-import ro.iugori.yadvs.model.rest.ErrorCode;
-import ro.iugori.yadvs.model.rest.ErrorModel;
+import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.error.CheckException;
+import ro.iugori.yadvs.model.error.ErrorCode;
+import ro.iugori.yadvs.model.error.ErrorModel;
+import ro.iugori.yadvs.model.error.YadvsException;
 import ro.iugori.yadvs.model.rest.ErrorResponse;
-import ro.iugori.yadvs.model.rest.TargetType;
 
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +41,35 @@ public class ErrorBuilder {
 
         var errors = responseOf(callCtx);
         errors.add(error);
+        return errors;
+    }
+
+    public static ErrorResponse responseOf(YadvsException e) {
+        var errors = responseOf(e.getCallCtx());
+
+        if (e instanceof CheckException ex) {
+            var cex = ex.getCause();
+            if (cex != null) {
+                var error = new ErrorModel();
+                error.setCode(toErrorCode(cex));
+                error.setMessage(cex.getMessage());
+                errors.add(error);
+            } else {
+                for (var error : ex.getErrors()) {
+                    var errorClone = SerializationUtils.clone(error);
+                    errorClone.setMoreInfo(getSwaggerUrl(((RestContext) e.getCallCtx()).getRequest()));
+                    errors.add(errorClone);
+                }
+            }
+        }
+
+        if (CollectionUtils.isEmpty(errors.getErrors())) {
+            var error = new ErrorModel();
+            error.setCode(toErrorCode(e));
+            error.setMessage(e.getMessage());
+            errors.add(error);
+        }
+
         return errors;
     }
 
@@ -72,7 +105,7 @@ public class ErrorBuilder {
         };
     }
 
-    private static ErrorCode toErrorCode(Exception ex) {
+    private static ErrorCode toErrorCode(Throwable ex) {
         return switch (ex) {
             case NumberFormatException ignored -> ErrorCode.CONVERSION_ERROR;
             case HttpRequestMethodNotSupportedException ignored -> ErrorCode.API_ERROR;

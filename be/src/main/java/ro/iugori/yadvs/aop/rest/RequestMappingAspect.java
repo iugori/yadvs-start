@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.aop.validation;
+package ro.iugori.yadvs.aop.rest;
 
 import jakarta.validation.Validator;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,11 +13,11 @@ import ro.iugori.yadvs.delegate.rest.ErrorBuilder;
 
 @Aspect
 @Component
-public class CheckAspect {
+public class RequestMappingAspect {
 
     private final Validator validator;
 
-    public CheckAspect(Validator validator) {
+    public RequestMappingAspect(Validator validator) {
         this.validator = validator;
     }
 

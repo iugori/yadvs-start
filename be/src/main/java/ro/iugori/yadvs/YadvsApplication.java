@@ -19,7 +19,7 @@ public class YadvsApplication {
         var appCtx = SpringApplication.run(YadvsApplication.class, args);
         if (appCtx instanceof WebServerApplicationContext webCtx) {
             var webServer = webCtx.getWebServer();
-            var url = new StringBuilder(String.format("http://%s:%d", InetAddress.getLocalHost().getHostName(), webServer.getPort()));
+            var url = new StringBuilder(String.format("http://%s:%d", InetAddress.getLocalHost().getHostAddress(), webServer.getPort()));
             Optional.ofNullable(webCtx.getServerNamespace())
                     .filter(StringUtils::isNotEmpty)
                     .map(path -> url.append("/").append(path));

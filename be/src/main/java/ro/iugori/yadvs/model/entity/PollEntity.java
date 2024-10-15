@@ -23,5 +23,9 @@ public class PollEntity {
     @Enumerated(EnumType.STRING)
     private PollStatus status;
 
+    @Column(name = "multi_option")
+    private boolean multiOption;
+
+
 
 }

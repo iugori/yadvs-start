@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
 import ro.iugori.yadvs.delegate.rest.ErrorBuilder;
-import ro.iugori.yadvs.model.rest.TargetType;
+import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.error.CheckException;
+import ro.iugori.yadvs.model.error.YadvsException;
 
 @RestControllerAdvice
 @Slf4j
@@ -17,8 +19,16 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAnyException(Exception e) {
-        var callCtx = new RestContext();
+        var callCtx = (RestContext) ((e instanceof YadvsException ye) ? ye.getCallCtx() : new RestContext());
         callCtx.getLogger().error(callCtx.getTraceId(), e);
+
+        if (e instanceof YadvsException ye) {
+            var errorResponse = ErrorBuilder.responseOf(ye);
+            if (ye instanceof CheckException) {
+                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         if (e instanceof MethodArgumentTypeMismatchException ex) {
             var errorResponse = ErrorBuilder.responseOf(callCtx, e, TargetType.PARAMETER, ex.getName());

@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.model.rest;
 
 import lombok.Getter;
+import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.util.TimeUtil;
 
 import java.time.LocalDateTime;
