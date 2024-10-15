@@ -45,14 +45,23 @@ public class PollResources {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx, @Check @RequestBody Poll poll) {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @Check @RequestBody Poll poll) {
+        poll.setId(id);
+        var optPoll = pollService.put(restCtx, poll);
+        return optPoll.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx, @Check @RequestBody Poll poll) {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @RequestBody Poll poll) {
+        poll.setId(id);
+        var optPoll = pollService.patch(restCtx, poll);
+        return optPoll.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id) {
@@ -67,8 +76,8 @@ public class PollResources {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id) {
-        var optPoll = pollService.findById(restCtx, id);
+    public ResponseEntity<?> getPoll(@PathVariable("id") long id) {
+        var optPoll = pollService.findById(id);
         return optPoll.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);

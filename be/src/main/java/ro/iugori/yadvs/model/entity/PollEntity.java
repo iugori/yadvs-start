@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import ro.iugori.yadvs.model.domain.PollStatus;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "name"), name = "poll")
@@ -26,6 +28,10 @@ public class PollEntity {
     @Column(name = "multi_option")
     private boolean multiOption;
 
+    @Column(name = "start")
+    private LocalDateTime start;
 
+    @Column(name = "end")
+    private LocalDateTime end;
 
 }

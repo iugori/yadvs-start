@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.dto.Poll;
 
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +24,7 @@ public class PollsTest {
         var poll = Poll.builder()
                 .name(FAKER.name().title())
                 .description(FAKER.lorem().sentence(20))
+                .start(LocalDateTime.now())
                 .build();
 
         var rr = given().baseUri(Setup.BASE_URL)

@@ -6,15 +6,17 @@ import ro.iugori.yadvs.model.entity.PollEntity;
 
 public class PollMapper {
 
-    public static void put(Poll dto, PollEntity entity) {
+    public static void putDto2Entity(Poll dto, PollEntity entity) {
         entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setStatus(dto.getStatus());
         entity.setMultiOption(BooleanUtils.toBoolean(dto.getMultiOption()));
+        entity.setStart(dto.getStart());
+        entity.setEnd(dto.getEnd());
     }
 
-    public static void patch(Poll dto, PollEntity entity) {
+    public static void patchDto2Entity(Poll dto, PollEntity entity) {
         if (dto.getId() != null) {
             entity.setId(dto.getId());
         }
@@ -30,6 +32,12 @@ public class PollMapper {
         if (dto.getMultiOption() != null) {
             entity.setMultiOption(dto.getMultiOption());
         }
+        if (dto.getStart() != null) {
+            entity.setStart(dto.getStart());
+        }
+        if (dto.getEnd() != null) {
+            entity.setEnd(dto.getEnd());
+        }
     }
 
     public static Poll dtoFrom(PollEntity entity) {
@@ -39,6 +47,8 @@ public class PollMapper {
         dto.setDescription(entity.getDescription());
         dto.setStatus(entity.getStatus());
         dto.setMultiOption(entity.isMultiOption());
+        dto.setStart(entity.getStart());
+        dto.setEnd(entity.getEnd());
         return dto;
     }
 

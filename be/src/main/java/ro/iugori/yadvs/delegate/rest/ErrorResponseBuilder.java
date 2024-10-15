@@ -20,7 +20,7 @@ import ro.iugori.yadvs.model.rest.ErrorResponse;
 import java.util.Optional;
 import java.util.Set;
 
-public class ErrorBuilder {
+public class ErrorResponseBuilder {
 
     public static ErrorResponse responseOf(CallContext callCtx) {
         var path = "N/A";
@@ -86,14 +86,19 @@ public class ErrorBuilder {
     public static <T> ErrorResponse responseOf(RestContext restCtx, Set<ConstraintViolation<T>> validationResult) {
         var errors = responseOf(restCtx);
         validationResult.forEach(constraint -> {
-            var error = new ErrorModel();
-            error.setCode(toErrorCode(constraint.getConstraintDescriptor()));
-            error.setMessage(constraint.getMessage());
+            var error = buildErrorModel(constraint);
             error.setMoreInfo(getSwaggerUrl(restCtx.getRequest()));
-            error.setTarget(TargetType.FIELD, String.valueOf(constraint.getPropertyPath()));
             errors.add(error);
         });
         return errors;
+    }
+
+    public static <T> ErrorModel buildErrorModel(ConstraintViolation<T> constraint) {
+        var error = new ErrorModel();
+        error.setCode(toErrorCode(constraint.getConstraintDescriptor()));
+        error.setMessage(constraint.getMessage());
+        error.setTarget(TargetType.FIELD, String.valueOf(constraint.getPropertyPath()));
+        return error;
     }
 
     private static ErrorCode toErrorCode(ConstraintDescriptor<?> descriptor) {

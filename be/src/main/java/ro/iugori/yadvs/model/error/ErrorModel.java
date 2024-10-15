@@ -26,4 +26,8 @@ public class ErrorModel implements Serializable {
         code = String.format("%d: %s", errCode.code, errCode.name().toLowerCase());
     }
 
+    public int getCodeAsInt() {
+        return Integer.parseInt(getCode().split(":")[0]);
+    }
+
 }

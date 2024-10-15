@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
-import ro.iugori.yadvs.delegate.rest.ErrorBuilder;
+import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 
 @Aspect
 @Component
@@ -35,7 +35,7 @@ public class RequestMappingAspect {
                 if (annotation instanceof Check) {
                     var validationResult = validator.validate(args[i]);
                     if (!validationResult.isEmpty()) {
-                        var errors = ErrorBuilder.responseOf(getRestContext(args), validationResult);
+                        var errors = ErrorResponseBuilder.responseOf(getRestContext(args), validationResult);
                         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
                     }
                     break;
