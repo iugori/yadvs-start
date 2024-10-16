@@ -1,7 +1,6 @@
 package ro.iugori.yadvs.service;
 
 import jakarta.validation.Validator;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ro.iugori.yadvs.delegate.ctx.CallContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
@@ -52,7 +51,9 @@ public class PollService {
         }
 
         var entity = optEntity.get();
-        if (!StringUtils.equals(dto.getName(), entity.getName())) {
+        var prevStatus = entity.getStatus();
+
+        if (dto.getName() != null && !dto.getName().equals(entity.getName())) {
             checkNameIsUnique(callCtx, dto.getName());
         }
 
@@ -68,6 +69,7 @@ public class PollService {
             }
         }
 
+        entity.setStatus(prevStatus);
         entity = pollRepository.saveAndFlush(entity);
         return Optional.of(entity);
     }

@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 @Builder
 public class Poll {
 
+    private Long id;
     private String name;
     private String description;
     private PollStatus status;
-    private boolean multiOption;
+    private Boolean multiOption;
     private LocalDateTime start;
     private LocalDateTime end;
 
