@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.refiner;
+package ro.iugori.yadvs.delegate.criteria;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.refiner;
+package ro.iugori.yadvs.delegate.criteria;
 
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.util.TextUtil;

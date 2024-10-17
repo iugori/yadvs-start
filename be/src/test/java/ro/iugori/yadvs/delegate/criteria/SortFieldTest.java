@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.refiner;
+package ro.iugori.yadvs.delegate.criteria;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +46,5 @@ class SortFieldTest {
                 .isThrownBy(() -> Sorter.Field.parse("+ Lorem *&^"))
                 .withMessage("Cannot parse sort field `Lorem *&^' (must be a valid Java identifier).");
     }
-
 
 }

@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.refiner;
+package ro.iugori.yadvs.delegate.criteria;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +16,12 @@ public class Selector implements Iterable<Selector.Predicate> {
 
     public enum Operator {
 
-        LT(List.of("<", "lt")),
-        LTE(List.of("<=", "lte")),
-        EQ(List.of("==", "eq")),
-        NE(List.of("!=", "ne", "neq")),
-        GTE(List.of(">", "gt")),
-        GT(List.of(">=", "gte")),
+        LT(List.of("lt", "<")),
+        LTE(List.of("lte", "<=")),
+        EQ(List.of("eq", "==")),
+        NE(List.of("ne", "!=", "neq")),
+        GTE(List.of("gt", ">")),
+        GT(List.of("gte", ">=")),
         IN(List.of("in")),
         LIKE(List.of("like")),
         ;
@@ -76,11 +76,15 @@ public class Selector implements Iterable<Selector.Predicate> {
             if (opStartIdx >= 0) {
                 var opEndIdx = name.lastIndexOf("]");
                 if (opEndIdx != name.length() - 1) {
-                    throw new ParseException("Cannot parse selection predicate with invalid operation specifier", name.length() - opEndIdx);
+                    throw new ParseException("Cannot parse selection predicate with invalid operation specifier.", name.length() - opEndIdx);
                 }
                 var opScript = name.substring(opStartIdx + 1, opEndIdx);
                 op = Operator.parse(opScript);
-                name = name.substring(0, opStartIdx);
+
+                name = StringUtils.trimToNull(name.substring(0, opStartIdx));
+                if (name == null) {
+                    throw new ParseException("Cannot parse selection predicate without name.", 0);
+                }
             }
 
             if (!TextUtil.isValidIdentifier(name)) {
@@ -90,6 +94,15 @@ public class Selector implements Iterable<Selector.Predicate> {
             }
 
             return new Predicate(name, op, value);
+        }
+
+        @Override
+        public String toString() {
+            var rep = new StringBuilder(name);
+            if (op != Operator.EQ) {
+                rep.append("[").append(op.hints.get(0)).append("]");
+            }
+            return rep.append("=").append(value).toString();
         }
 
     }

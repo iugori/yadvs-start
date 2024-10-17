@@ -9,7 +9,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
-import ro.iugori.yadvs.delegate.refiner.RecordRefiner;
+import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.error.YadvsException;
 import ro.iugori.yadvs.model.rest.MoreHttpHeaders;
@@ -92,14 +92,14 @@ public class PollResources {
             , @RequestParam("~pageNo") String pageNo
             , @RequestParam("~pageSize") String pageSize
     ) throws ParseException {
-        var rrb = RecordRefiner.builder().project(fields).sort(sorting).paginate(pageNo, pageSize);
+        var rrb = QueryCriteria.builder().select(fields).orderBy(sorting).page(pageNo, pageSize);
         var queryParams = restCtx.getRequest().getParameterMap();
         for (var entry : queryParams.entrySet()) {
             var key = entry.getKey();
             if (!key.startsWith("~")) {
                 var value = entry.getValue();
                 if (value != null) {
-                    rrb.select(key, value.length == 1 ? value[0] : value);
+                    rrb.where(key, value.length == 1 ? value[0] : value);
                 }
             }
         }
