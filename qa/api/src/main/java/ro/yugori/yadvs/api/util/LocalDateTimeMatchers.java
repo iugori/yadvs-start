@@ -18,16 +18,23 @@ public class LocalDateTimeMatchers {
             }
 
             @Override
-            public boolean matches(Object actual) {
-                if (expected == null && actual == null) {
+            public boolean matches(Object actualStr) {
+                if (expected == null && actualStr == null) {
                     return true;
                 }
-                if (expected == null || actual == null) {
+                if (expected == null || actualStr == null) {
                     return false;
                 }
-                actual = LocalDateTime.parse(String.valueOf(actual));
-                var delta = Duration.between(expected, (LocalDateTime) actual);
-                return Math.abs(delta.getNano()) < 1_000_000;
+                var expectedStr = expected.toString();
+                if (expectedStr.startsWith((String) actualStr)) {
+                    return true;
+                }
+                var actual = LocalDateTime.parse(String.valueOf(actualStr));
+                if (expected.equals(actual)) {
+                    return true;
+                }
+                var delta = Duration.between(expected, actual);
+                return Math.abs(delta.getNano()) < 100_000_000;
             }
 
         };

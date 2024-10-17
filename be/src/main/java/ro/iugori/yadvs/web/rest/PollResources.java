@@ -62,7 +62,6 @@ public class PollResources {
                 : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id) {
         var delResult = pollService.delete(restCtx, id);
@@ -84,7 +83,12 @@ public class PollResources {
     }
 
     @GetMapping
-    public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx) {
+    public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
+            , @RequestParam("~fields") String fields
+            , @RequestParam("~sort") String sort
+            , @RequestParam("~limit") String limit
+            , @RequestParam("~page") String page
+    ) {
         var polls = pollService.find();
         return polls.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
