@@ -1,40 +1,51 @@
 package ro.iugori.yadvs.delegate.refiner;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.ParseException;
 
 public class RecordRefinerBuilder {
 
 
-    private Filter filter;
+    private Projector projector;
+    private Selector selector;
     private Sorter sorter;
 
-    private Integer limit;
-    private Integer page;
-    private Integer offset;
+    private Integer pageNo;
+    private Integer pageSize;
 
 
     public RecordRefiner build() {
-        return new RecordRefiner(filter, sorter, limit, page);
+        if (pageNo != null && pageSize != null) {
+            var offset = RecordRefiner.offsetFromPage(pageNo, pageSize);
+            return new RecordRefiner(projector, selector, sorter, offset, pageSize);
+        }
+        return new RecordRefiner(projector, selector, sorter, null, pageSize);
     }
 
-    public RecordRefinerBuilder filterPredicate(String filterPredicate) {
-        if (filter == null) {
-            filter = new Filter();
+    public void select(String script, Object value) throws ParseException {
+        if (selector == null) {
+            selector = new Selector();
         }
-        filter.add(FilterPredicate.parse(filterPredicate));
+        selector.add(Selector.Predicate.parse(script, value));
+    }
+
+    public RecordRefinerBuilder project(String script) throws ParseException {
+        this.projector = Projector.parse(script);
         return this;
     }
 
-    public RecordRefinerBuilder sorter(String sorter) {
-        sorter = Sorter.parse(sorter);
+
+    public RecordRefinerBuilder sort(String script) throws ParseException {
+        this.sorter = Sorter.parse(script);
         return this;
     }
 
-    public RecordRefinerBuilder sortField(String sortField) throws ParseException {
-        if (sorter == null) {
-            sorter = new Sorter();
-        }
-        sorter.add(SortField.parse(sortField));
+    public RecordRefinerBuilder paginate(String pageNo, String pageSize) {
+        pageNo = StringUtils.trimToNull(pageNo);
+        this.pageNo = pageNo == null ? null : Integer.parseInt(pageNo);
+        pageSize = StringUtils.trimToNull(pageSize);
+        this.pageSize = pageSize == null ? null : Integer.parseInt(pageSize);
         return this;
     }
 

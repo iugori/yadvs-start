@@ -9,6 +9,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
+import ro.iugori.yadvs.delegate.refiner.RecordRefiner;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.error.YadvsException;
 import ro.iugori.yadvs.model.rest.MoreHttpHeaders;
@@ -16,7 +17,9 @@ import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.web.URIs;
 
+import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = URIs.PATH_POLLS)
@@ -85,14 +88,27 @@ public class PollResources {
     @GetMapping
     public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
             , @RequestParam("~fields") String fields
-            , @RequestParam("~sort") String sort
-            , @RequestParam("~limit") String limit
-            , @RequestParam("~page") String page
-    ) {
-        var polls = pollService.find();
-        return polls.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(polls, HttpStatus.OK);
+            , @RequestParam("~sort") String sorting
+            , @RequestParam("~pageNo") String pageNo
+            , @RequestParam("~pageSize") String pageSize
+    ) throws ParseException {
+        var rrb = RecordRefiner.builder().project(fields).sort(sorting).paginate(pageNo, pageSize);
+        var queryParams = restCtx.getRequest().getParameterMap();
+        for (var entry : queryParams.entrySet()) {
+            var key = entry.getKey();
+            if (!key.startsWith("~")) {
+                var value = entry.getValue();
+                if (value != null) {
+                    rrb.select(key, value.length == 1 ? value[0] : value);
+                }
+            }
+        }
+        var pollEntities = pollService.find(rrb.build());
+        if (pollEntities.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        var pollDtos = pollEntities.stream().map(PollMapper::dtoFrom).collect(Collectors.toList());
+        return new ResponseEntity<>(pollDtos, HttpStatus.OK);
     }
 
 }

@@ -3,6 +3,7 @@ package ro.iugori.yadvs.service;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import ro.iugori.yadvs.delegate.ctx.CallContext;
+import ro.iugori.yadvs.delegate.refiner.RecordRefiner;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.domain.PollStatus;
@@ -98,7 +99,10 @@ public class PollService {
         return pollRepository.findById(id);
     }
 
-    public List<Poll> find() {
+    public List<PollEntity> find(RecordRefiner rr) {
+        if (rr == null || rr.isEmpty()) {
+            return pollRepository.findAll();
+        }
         return List.of();
     }
 
