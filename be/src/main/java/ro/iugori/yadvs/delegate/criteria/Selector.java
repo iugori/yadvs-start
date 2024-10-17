@@ -32,7 +32,6 @@ public class Selector implements Iterable<Selector.Predicate> {
             this.hints = hints;
         }
 
-
         public static Operator parse(String script) throws ParseException {
             var hint = StringUtils.trimToEmpty(script).toLowerCase(Locale.ROOT);
             for (var op : values()) {
@@ -42,6 +41,7 @@ public class Selector implements Iterable<Selector.Predicate> {
             }
             throw new ParseException(String.format("Cannot parse selection predicate operator `%s'.", script), 0);
         }
+
     }
 
     @AllArgsConstructor

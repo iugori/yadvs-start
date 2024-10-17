@@ -14,7 +14,7 @@ import ro.iugori.yadvs.model.domain.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
-import ro.iugori.yadvs.model.error.YadvsException;
+import ro.iugori.yadvs.model.error.YadvsRestException;
 import ro.iugori.yadvs.model.rest.ErrorResponse;
 
 import java.util.Optional;
@@ -44,10 +44,10 @@ public class ErrorResponseBuilder {
         return errors;
     }
 
-    public static ErrorResponse responseOf(YadvsException e) {
+    public static ErrorResponse responseOf(YadvsRestException e) {
         var errors = responseOf(e.getCallCtx());
 
-        if (e instanceof CheckException ex) {
+        if (e.getCause() instanceof CheckException ex) {
             var cex = ex.getCause();
             if (cex != null) {
                 var error = new ErrorModel();
@@ -112,9 +112,9 @@ public class ErrorResponseBuilder {
 
     private static ErrorCode toErrorCode(Throwable ex) {
         return switch (ex) {
-            case NumberFormatException ignored -> ErrorCode.CONVERSION_ERROR;
+            case NumberFormatException ignored -> ErrorCode.TYPE_CONVERSION;
             case HttpRequestMethodNotSupportedException ignored -> ErrorCode.API_ERROR;
-            case MethodArgumentTypeMismatchException ignored -> ErrorCode.CONVERSION_ERROR;
+            case MethodArgumentTypeMismatchException ignored -> ErrorCode.TYPE_CONVERSION;
             default -> ErrorCode.GENERIC;
         };
     }

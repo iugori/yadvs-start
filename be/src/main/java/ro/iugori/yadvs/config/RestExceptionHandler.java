@@ -12,7 +12,7 @@ import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.model.domain.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
-import ro.iugori.yadvs.model.error.YadvsException;
+import ro.iugori.yadvs.model.error.YadvsRestException;
 
 @RestControllerAdvice
 @Slf4j
@@ -20,21 +20,24 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAnyException(Exception e) {
-        var callCtx = (RestContext) ((e instanceof YadvsException ye) ? ye.getCallCtx() : new RestContext());
-        callCtx.getLogger().error(callCtx.getTraceId(), e);
+        var callCtx = (RestContext) ((e instanceof YadvsRestException ye) ? ye.getCallCtx() : new RestContext());
 
-        if (e instanceof YadvsException ye) {
+        if (e instanceof YadvsRestException ye) {
             var errorResponse = ErrorResponseBuilder.responseOf(ye);
-            if (ye instanceof CheckException) {
-                for (var error : ((CheckException) ye).getErrors()) {
+            if (ye.getCause() instanceof CheckException ce) {
+                logException(callCtx, ce);
+                for (var error : ce.getErrors()) {
                     if (ErrorCode.NOT_ALLOWED.code == error.getCodeAsInt()) {
                         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
                     }
                 }
                 return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
             }
+            logException(callCtx, e);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        logException(callCtx, e);
 
         if (e instanceof MethodArgumentTypeMismatchException ex) {
             var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.PARAMETER, ex.getName());
@@ -48,6 +51,10 @@ public class RestExceptionHandler {
         }
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private static void logException(RestContext callCtx, Exception e) {
+        callCtx.getLogger().error(callCtx.getTraceId(), e);
     }
 
 }

@@ -4,12 +4,24 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.MimeType;
+import ro.yugori.yadvs.api.RestRequests;
 import ro.yugori.yadvs.api.dto.Poll;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class PollErrorsTest extends PollBaseTest {
+
+    @Test
+    void getParseError() {
+        given().
+                when()
+                .param(RestRequests.Params.FIELDS, "a+b")
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("errors[0].message", is("Cannot use projection field `a+b' (must be a valid Java identifier)."));
+    }
 
     @Test
     void postNoNameOrDescription() {
@@ -36,7 +48,7 @@ public class PollErrorsTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll `name' must be unique"));
+                .body("errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test
@@ -57,7 +69,7 @@ public class PollErrorsTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll `name' must be unique"));
+                .body("errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test
@@ -79,7 +91,7 @@ public class PollErrorsTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll `name' must be unique"));
+                .body("errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test

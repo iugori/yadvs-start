@@ -1,9 +1,10 @@
 package ro.iugori.yadvs.service;
 
 import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ro.iugori.yadvs.delegate.ctx.CallContext;
 import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
+import ro.iugori.yadvs.delegate.ctx.CallContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.domain.PollStatus;
@@ -18,7 +19,9 @@ import ro.iugori.yadvs.util.mapping.PollMapper;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
+@Slf4j
 public class PollService {
 
     private final Validator validator;
@@ -66,7 +69,7 @@ public class PollService {
             var validationResult = validator.validate(dto);
             if (!validationResult.isEmpty()) {
                 var errors = validationResult.stream().map(ErrorResponseBuilder::buildErrorModel).toArray(ErrorModel[]::new);
-                throw new CheckException(callCtx, errors);
+                throw new CheckException(errors);
             }
         }
 
@@ -92,7 +95,7 @@ public class PollService {
         error.setCode(ErrorCode.NOT_ALLOWED);
         error.setMessage(String.format("Polls with status `%s' cannot be deleted (only archived)", entity.getStatus()));
         error.setTarget(TargetType.FIELD, "status");
-        throw new CheckException(callCtx, error);
+        throw new CheckException(error);
     }
 
     public Optional<PollEntity> findById(long id) {
@@ -109,11 +112,12 @@ public class PollService {
     private void checkNameIsUnique(CallContext callCtx, String name) {
         var optEntity = pollRepository.findByName(name);
         if (optEntity.isPresent()) {
+            log.error("{} Poll name already exists: `{}'.", callCtx.getTraceId(), name);
             var error = new ErrorModel();
             error.setCode(ErrorCode.VALUE_CONFLICT);
-            error.setMessage("Poll `name' must be unique");
+            error.setMessage("Poll.name must be unique");
             error.setTarget(TargetType.FIELD, "name");
-            throw new CheckException(callCtx, error);
+            throw new CheckException(error);
         }
     }
 

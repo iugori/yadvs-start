@@ -30,4 +30,9 @@ public class ErrorModel implements Serializable {
         return Integer.parseInt(getCode().split(":")[0]);
     }
 
+
+    @Override
+    public String toString() {
+        return String.format("%6d: %s", getCodeAsInt(), message);
+    }
 }

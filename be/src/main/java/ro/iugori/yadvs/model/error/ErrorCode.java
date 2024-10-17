@@ -8,14 +8,20 @@ public enum ErrorCode {
     NOT_NULL(-2000),
     NOT_EMPTY(-2001),
 
-    CONVERSION_ERROR(-3000),
+    TYPE_CONVERSION(-3000),
+    FIELD_NAME(-3010),
+
     VALUE_CONFLICT(-3100),
+    PROJECTION_CRITERIA(-3200),
+    SELECTION_CRITERIA(-3210),
+    SORTING_CRITERIA(-3220),
+    PAGINATION_CRITERIA(-3230),
 
     ;
 
     public final int code;
 
-    private ErrorCode(int code) {
+    ErrorCode(int code) {
         this.code = code;
     }
 

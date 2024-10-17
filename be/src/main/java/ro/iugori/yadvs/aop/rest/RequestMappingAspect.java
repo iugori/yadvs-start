@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ro.iugori.yadvs.delegate.ctx.RestContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
+import ro.iugori.yadvs.model.error.YadvsRestException;
 
 @Aspect
 @Component
@@ -42,7 +43,14 @@ public class RequestMappingAspect {
                 }
             }
         }
-        return joinPoint.proceed(args);
+        try {
+            return joinPoint.proceed(args);
+        } catch (Exception e) {
+            if (e instanceof YadvsRestException) {
+                throw e;
+            }
+            throw new YadvsRestException(getRestContext(args), e);
+        }
     }
 
     private static RestContext getRestContext(Object[] args) {

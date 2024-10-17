@@ -8,17 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.delegate.ctx.RestContext;
 import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
+import ro.iugori.yadvs.delegate.ctx.RestContext;
 import ro.iugori.yadvs.dto.Poll;
-import ro.iugori.yadvs.model.error.YadvsException;
+import ro.iugori.yadvs.model.error.YadvsRestException;
 import ro.iugori.yadvs.model.rest.MoreHttpHeaders;
+import ro.iugori.yadvs.model.rest.RestRequests;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.web.URIs;
 
-import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,11 +38,11 @@ public class PollResources {
         var entity = pollService.create(restCtx, poll);
         var headers = new LinkedMultiValueMap<String, String>();
         headers.put(HttpHeaders.LOCATION, List.of(restCtx.getRequest().getRequestURI() + "/" + entity.getId()));
-        if (prefer.equalsIgnoreCase("return=minimal")) {
+        if (prefer.equalsIgnoreCase(MoreHttpHeaders.Values.RETURN_MINIMAL)) {
             headers.put(MoreHttpHeaders.PREFERENCE_APPLIED, List.of(prefer));
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
-        if (prefer.equalsIgnoreCase("return=representation")) {
+        if (prefer.equalsIgnoreCase(MoreHttpHeaders.Values.RETURN_REPRESENTATION)) {
             headers.put(MoreHttpHeaders.PREFERENCE_APPLIED, List.of(prefer));
         }
         return new ResponseEntity<>(PollMapper.dtoFrom(entity), headers, HttpStatus.CREATED);
@@ -74,7 +75,7 @@ public class PollResources {
         if (Boolean.FALSE.equals(delResult)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        throw new YadvsException(restCtx, "Archiving via delete not yet supported");
+        throw new YadvsRestException(restCtx, "Archiving via delete not yet supported");
     }
 
     @GetMapping("/{id}")
@@ -87,28 +88,34 @@ public class PollResources {
 
     @GetMapping
     public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
-            , @RequestParam("~fields") String fields
-            , @RequestParam("~sort") String sorting
-            , @RequestParam("~pageNo") String pageNo
-            , @RequestParam("~pageSize") String pageSize
-    ) throws ParseException {
-        var rrb = QueryCriteria.builder().select(fields).orderBy(sorting).page(pageNo, pageSize);
+            , @RequestParam(RestRequests.Params.FIELDS) Optional<String> fields
+            , @RequestParam(RestRequests.Params.SORT) Optional<String> sorting
+            , @RequestParam(RestRequests.Params.PAGE_NO) Optional<String> pageNo
+            , @RequestParam(RestRequests.Params.PAGE_SIZE) Optional<String> pageSize
+    ) {
+        var qcBuilder = QueryCriteria.builder()
+                .select(fields.orElse(null))
+                .orderBy(sorting.orElse(null))
+                .page(pageNo.orElse(null), pageSize.orElse(null));
+
         var queryParams = restCtx.getRequest().getParameterMap();
         for (var entry : queryParams.entrySet()) {
             var key = entry.getKey();
             if (!key.startsWith("~")) {
                 var value = entry.getValue();
                 if (value != null) {
-                    rrb.where(key, value.length == 1 ? value[0] : value);
+                    qcBuilder.where(key, value.length == 1 ? value[0] : value);
                 }
             }
         }
-        var pollEntities = pollService.find(rrb.build());
-        if (pollEntities.isEmpty()) {
+
+        var entityList = pollService.find(qcBuilder.build());
+        if (entityList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        var pollDtos = pollEntities.stream().map(PollMapper::dtoFrom).collect(Collectors.toList());
-        return new ResponseEntity<>(pollDtos, HttpStatus.OK);
+
+        var dtoList = entityList.stream().map(PollMapper::dtoFrom).collect(Collectors.toList());
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
 
 }

@@ -1,8 +1,13 @@
 package ro.iugori.yadvs.model.rest;
 
-public class MoreHttpHeaders {
+public interface MoreHttpHeaders {
 
-    public static final String PREFER = "Prefer";
-    public static final String PREFERENCE_APPLIED = "Preference-Applied";
+    String PREFER = "Prefer";
+    String PREFERENCE_APPLIED = "Preference-Applied";
+
+    interface Values {
+        String RETURN_MINIMAL = "return=minimal";
+        String RETURN_REPRESENTATION = "return=representation";
+    }
 
 }
