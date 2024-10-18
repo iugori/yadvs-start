@@ -10,5 +10,4 @@ public class TextUtil {
         return IDENTIFIER_PATTERN.matcher(source).matches();
     }
 
-
 }

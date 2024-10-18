@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.model.criteria;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class QueryCriteriaTest {
     @Test
     void isEmpty() {
         assertTrue(new QueryCriteria(null, null, null, null, null).isEmpty());
-        assertTrue(new QueryCriteria(new Projector(), new Selector(), new Sorter(), null, null).isEmpty());
+        assertTrue(new QueryCriteria(new ProjectionFilter(), new SelectionFilter(), new SortOrder(), null, null).isEmpty());
         assertFalse(new QueryCriteria(null, null, null, 1, null).isEmpty());
         assertFalse(new QueryCriteria(null, null, null, null, 1).isEmpty());
     }

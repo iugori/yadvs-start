@@ -40,6 +40,8 @@ public class PollBaseTest extends ApiTest {
                 .name(FAKER.name().title())
                 .description(FAKER.lorem().sentence(20))
                 .multiOption(FAKER.bool().bool())
+//              .start(FAKER.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime())
+//              .end(FAKER.date().future(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime())
                 .build();
     }
 
@@ -79,6 +81,11 @@ public class PollBaseTest extends ApiTest {
     @AfterAll
     static void cleanDatabase() {
         TEST_POLL_IDS.forEach(PollBaseTest::deletePoll);
+    }
+
+
+    public static void main(String... args) {
+
     }
 
 }

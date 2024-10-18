@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import ro.iugori.yadvs.delegate.ctx.RestContext;
+import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.model.error.YadvsRestException;
 

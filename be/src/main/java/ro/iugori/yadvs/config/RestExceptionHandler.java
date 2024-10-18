@@ -7,7 +7,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ro.iugori.yadvs.delegate.ctx.RestContext;
+import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.model.domain.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;

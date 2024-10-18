@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.model.criteria;
 
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.util.TextUtil;
@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Projector implements Iterable<String> {
+public class ProjectionFilter implements Iterable<String> {
 
     private final List<String> fields = new ArrayList<>();
 
-    public static Projector parse(String script) throws ParseException {
-        var projector = new Projector();
+    public static ProjectionFilter parse(String script) throws ParseException {
+        var projector = new ProjectionFilter();
 
         var fields = StringUtils.trimToNull(script);
         if (fields == null) {
@@ -42,7 +42,7 @@ public class Projector implements Iterable<String> {
         return fields.iterator();
     }
 
-    public Projector add(String name) {
+    public ProjectionFilter add(String name) {
         fields.add(name);
         return this;
     }

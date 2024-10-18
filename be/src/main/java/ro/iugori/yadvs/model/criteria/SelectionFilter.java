@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.model.criteria;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,18 +12,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-public class Selector implements Iterable<Selector.Predicate> {
+public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
 
     public enum Operator {
 
-        LT(List.of("lt", "<")),
-        LTE(List.of("lte", "<=")),
         EQ(List.of("eq", "==")),
+        IS(List.of("is")),
+        LT(List.of("lt", "<")),
+        LE(List.of("le", "<=", "lte")),
         NE(List.of("ne", "!=", "neq")),
-        GTE(List.of("gt", ">")),
-        GT(List.of("gte", ">=")),
+        GE(List.of("ge", ">=", "gte")),
+        GT(List.of("gt", ">")),
         IN(List.of("in")),
         LIKE(List.of("like")),
+        UNLIKE(List.of("unlike")),
         ;
 
         public final List<String> hints;
@@ -114,7 +116,7 @@ public class Selector implements Iterable<Selector.Predicate> {
         return predicates.iterator();
     }
 
-    public Selector add(Predicate predicate) {
+    public SelectionFilter add(Predicate predicate) {
         predicates.add(predicate);
         return this;
     }

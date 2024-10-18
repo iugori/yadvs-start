@@ -3,10 +3,10 @@ package ro.iugori.yadvs.service;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
-import ro.iugori.yadvs.delegate.ctx.CallContext;
+import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.dto.Poll;
+import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.domain.PollStatus;
 import ro.iugori.yadvs.model.domain.TargetType;
 import ro.iugori.yadvs.model.entity.PollEntity;
@@ -14,6 +14,7 @@ import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.repository.PollRepository;
+import ro.iugori.yadvs.repository.PollRepositoryCustom;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 
 import java.util.List;
@@ -26,10 +27,12 @@ public class PollService {
 
     private final Validator validator;
     private final PollRepository pollRepository;
+    private final PollRepositoryCustom pollRepositoryCustom;
 
-    public PollService(Validator validator, PollRepository pollRepository) {
+    public PollService(Validator validator, PollRepository pollRepository, PollRepositoryCustom pollRepositoryCustom) {
         this.validator = validator;
         this.pollRepository = pollRepository;
+        this.pollRepositoryCustom = pollRepositoryCustom;
     }
 
     public PollEntity create(CallContext callCtx, Poll dto) {
@@ -102,11 +105,11 @@ public class PollService {
         return pollRepository.findById(id);
     }
 
-    public List<PollEntity> find(QueryCriteria rr) {
-        if (rr == null || rr.isEmpty()) {
+    public List<PollEntity> find(CallContext callCtx, QueryCriteria qc) {
+        if (qc == null || qc.isEmpty()) {
             return pollRepository.findAll();
         }
-        return List.of();
+        return pollRepositoryCustom.findByCriteria(callCtx, qc);
     }
 
     private void checkNameIsUnique(CallContext callCtx, String name) {

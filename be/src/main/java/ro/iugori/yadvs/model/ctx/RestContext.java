@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.ctx;
+package ro.iugori.yadvs.model.ctx;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;

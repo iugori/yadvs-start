@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.model.criteria;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -13,12 +13,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Sorter implements Iterable<Sorter.Field> {
+public class SortOrder implements Iterable<SortOrder.Field> {
 
-    public enum Order {
+    public enum Direction {
 
         ASC,
-        DSC,
+        DESC,
 
     }
 
@@ -29,7 +29,7 @@ public class Sorter implements Iterable<Sorter.Field> {
     public static class Field {
 
         private String name;
-        private Order order;
+        private Direction direction;
 
         public static Field parse(String script) throws ParseException {
             var name = StringUtils.trimToNull(script);
@@ -37,9 +37,9 @@ public class Sorter implements Iterable<Sorter.Field> {
                 throw new ParseException("Cannot parse sort field from empty string.", 0);
             }
 
-            var order = Order.ASC;
+            var order = Direction.ASC;
             if (name.startsWith("-")) {
-                order = Order.DSC;
+                order = Direction.DESC;
                 name = name.substring(1);
             } else if (name.startsWith("+")) {
                 name = name.substring(1);
@@ -60,15 +60,15 @@ public class Sorter implements Iterable<Sorter.Field> {
 
         @Override
         public String toString() {
-            return String.format("%s%s", order == Order.ASC ? "+" : "-", name);
+            return String.format("%s%s", direction == Direction.ASC ? "+" : "-", name);
         }
 
     }
 
     private final List<Field> fields = new ArrayList<>();
 
-    public static Sorter parse(String script) throws ParseException {
-        var sorter = new Sorter();
+    public static SortOrder parse(String script) throws ParseException {
+        var sorter = new SortOrder();
 
         var fields = StringUtils.trimToNull(script);
         if (fields == null) {
@@ -91,10 +91,10 @@ public class Sorter implements Iterable<Sorter.Field> {
         return fields.iterator();
     }
 
-    public Sorter add(Field newField) {
+    public SortOrder add(Field newField) {
         for (var field : fields) {
             if (field.getName().equals(newField.getName())) {
-                if (field.getOrder().equals(newField.getOrder())) {
+                if (field.getDirection().equals(newField.getDirection())) {
                     return this;
                 } else {
                     throw new IllegalArgumentException(String.format("Both ASC and DSC ordering for `%s'", field.getName()));

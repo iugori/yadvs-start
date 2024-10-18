@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.model.error;
 
 import lombok.Getter;
-import ro.iugori.yadvs.delegate.ctx.CallContext;
+import ro.iugori.yadvs.model.ctx.CallContext;
 
 public class YadvsRestException extends RuntimeException {
 

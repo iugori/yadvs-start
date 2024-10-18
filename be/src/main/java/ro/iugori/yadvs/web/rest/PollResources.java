@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
-import ro.iugori.yadvs.delegate.ctx.RestContext;
+import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.dto.Poll;
+import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.error.YadvsRestException;
 import ro.iugori.yadvs.model.rest.MoreHttpHeaders;
 import ro.iugori.yadvs.model.rest.RestRequests;
@@ -109,7 +109,7 @@ public class PollResources {
             }
         }
 
-        var entityList = pollService.find(qcBuilder.build());
+        var entityList = pollService.find(restCtx, qcBuilder.build());
         if (entityList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

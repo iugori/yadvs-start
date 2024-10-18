@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.ctx;
+package ro.iugori.yadvs.model.ctx;
 
 import com.devskiller.friendly_id.FriendlyId;
 import lombok.Getter;

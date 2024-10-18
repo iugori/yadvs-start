@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.delegate.criteria;
 
 import org.junit.jupiter.api.Test;
+import ro.iugori.yadvs.model.criteria.QueryCriteria;
 
 import java.text.ParseException;
 
