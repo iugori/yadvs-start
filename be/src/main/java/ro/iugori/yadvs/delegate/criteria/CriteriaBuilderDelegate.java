@@ -126,13 +126,14 @@ public class CriteriaBuilderDelegate {
     }
 
     public void addOrderBy(SortOrder byFields) {
-        if (byFields == null || byFields.isEmpty()) {
-            return;
-        }
+        var columns = new ArrayList<Order>();
         for (var field : byFields) {
             var column = root.get(field.getName());
             var order = field.getDirection() == SortOrder.Direction.DESC ? cb.desc(column) : cb.asc(column);
-            query.orderBy(order);
+            columns.add(order);
+        }
+        if (!columns.isEmpty()) {
+            query.orderBy(columns);
         }
     }
 

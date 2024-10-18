@@ -182,4 +182,25 @@ class PollRepositoryCustomTest {
         assertEquals(2, selection.size());
     }
 
+    @Test
+    void orderByNameAsc() {
+        var qc = QueryCriteria.builder().orderBy("+name").build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals("Chief Research Associate", selection.get(0).getName());
+    }
+
+    @Test
+    void orderByDescriptionDesc() {
+        var qc = QueryCriteria.builder().orderBy("-description").build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals("Product Division Orchestrator", selection.get(0).getName());
+    }
+
+    @Test
+    void orderByMultiOptionDescNameAsc() {
+        var qc = QueryCriteria.builder().orderBy("-multiOption,+name").build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals("Consultant", selection.get(0).getName());
+    }
+
 }

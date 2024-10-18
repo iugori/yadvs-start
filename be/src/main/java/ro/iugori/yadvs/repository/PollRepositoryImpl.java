@@ -4,8 +4,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import ro.iugori.yadvs.delegate.criteria.CriteriaBuilderDelegate;
-import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
+import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
 
 import java.util.List;
@@ -25,8 +25,12 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
         var qcDelegate = new CriteriaBuilderDelegate(callCtx, cb, query, pollEntity);
 
         query.select(pollEntity);
-        qcDelegate.addWhereConjunction(qc.selectionFilter());
-        qcDelegate.addOrderBy(qc.sortCriteria());
+        if (qc.selectionFilter() != null) {
+            qcDelegate.addWhereConjunction(qc.selectionFilter());
+        }
+        if (qc.sortOrder() != null) {
+            qcDelegate.addOrderBy(qc.sortOrder());
+        }
 
         var typedQuery = entityManager.createQuery(query);
         if (qc.offset() != null && qc.offset() > 0) {

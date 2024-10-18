@@ -5,7 +5,7 @@ import ro.iugori.yadvs.delegate.criteria.QueryCriteriaBuilder;
 public record QueryCriteria(
         ProjectionFilter projectionFilter,
         SelectionFilter selectionFilter,
-        SortOrder sortCriteria,
+        SortOrder sortOrder,
         Integer offset, Integer limit) {
 
     public static QueryCriteriaBuilder builder() {
@@ -29,7 +29,7 @@ public record QueryCriteria(
     public boolean isEmpty() {
         return (projectionFilter == null || projectionFilter.isEmpty())
                 && (selectionFilter == null || selectionFilter.isEmpty())
-                && (sortCriteria == null || sortCriteria.isEmpty())
+                && (sortOrder == null || sortOrder.isEmpty())
                 && offset == null
                 && limit == null;
     }
