@@ -2,6 +2,8 @@ package ro.iugori.yadvs.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
 import ro.iugori.yadvs.delegate.criteria.CriteriaBuilderDelegate;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
@@ -17,30 +19,57 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
+    public Pair<List<PollEntity>, Long> findByCriteriaAndCountTotal(CallContext callCtx, QueryCriteria qc) {
+        return findByCriteriaAndCountTotal(callCtx, qc, true);
+    }
+
+    @Override
     public List<PollEntity> findByCriteria(CallContext callCtx, QueryCriteria qc) {
+        return findByCriteriaAndCountTotal(callCtx, qc, false).getFirst();
+    }
+
+    private Pair<List<PollEntity>, Long> findByCriteriaAndCountTotal(CallContext callCtx, QueryCriteria qc, boolean countTotal) {
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createQuery(PollEntity.class);
-        var pollEntity = query.from(PollEntity.class);
+        var entity = query.from(PollEntity.class);
 
-        var qcDelegate = new CriteriaBuilderDelegate(callCtx, cb, query, pollEntity);
+        var cbDelegate = new CriteriaBuilderDelegate(callCtx, cb, query, entity);
 
-        query.select(pollEntity);
-        if (qc.selectionFilter() != null) {
-            qcDelegate.addWhereConjunction(qc.selectionFilter());
-        }
-        if (qc.sortOrder() != null) {
-            qcDelegate.addOrderBy(qc.sortOrder());
-        }
+        // projection
+        query.select(entity);
 
+        // selection
+        var predicates = cbDelegate.addWhereConjunction(qc.selectionFilter());
+
+        // sorting
+        cbDelegate.addOrderBy(qc.sortOrder());
+
+        // pagination
         var typedQuery = entityManager.createQuery(query);
+        var runCountQuery = 2;
         if (qc.offset() != null && qc.offset() > 0) {
             typedQuery.setFirstResult(qc.offset());
+            runCountQuery--;
         }
         if (qc.limit() != null && qc.limit() > 0) {
             typedQuery.setMaxResults(qc.limit());
+            runCountQuery--;
         }
 
-        return typedQuery.getResultList();
+        var totalCount = 0L;
+        // counting total - no need to run the counter query if pagination is not applied
+        if (countTotal && runCountQuery == 0) {
+            var countQuery = cb.createQuery(Long.class);
+            var recordCount = countQuery.from(PollEntity.class);
+            countQuery.select(cb.count(recordCount)).where(cb.and(predicates.toArray(new Predicate[0])));
+            totalCount = entityManager.createQuery(countQuery).getSingleResult();
+        }
+
+        var result = typedQuery.getResultList();
+        if (runCountQuery != 0) {
+            totalCount = result.size();
+        }
+        return Pair.of(result, totalCount);
     }
 
 }

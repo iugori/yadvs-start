@@ -7,6 +7,7 @@ import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.util.ConversionUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -25,22 +26,23 @@ public class CriteriaBuilderDelegate {
         this.root = root;
     }
 
-    public void addWhereConjunction(SelectionFilter filters) {
+    public List<Predicate> addWhereConjunction(SelectionFilter filters) {
         var predicates = new ArrayList<Predicate>();
-
-        for (var filter : filters) {
-            try {
-                var path = root.get(filter.getName());
-                var predicate = buildPredicate(path, filter);
-                predicate.ifPresent(predicates::add);
-            } catch (IllegalStateException | IllegalArgumentException ex) {
-                callCtx.getLogger().warn("{} {}", callCtx.getTraceId(), ex.getMessage());
+        if (filters != null) {
+            for (var filter : filters) {
+                try {
+                    var path = root.get(filter.getName());
+                    var predicate = buildPredicate(path, filter);
+                    predicate.ifPresent(predicates::add);
+                } catch (IllegalStateException | IllegalArgumentException ex) {
+                    callCtx.getLogger().warn("{} {}", callCtx.getTraceId(), ex.getMessage());
+                }
+            }
+            if (!predicates.isEmpty()) {
+                query.where(cb.and(predicates.toArray(new Predicate[0])));
             }
         }
-
-        if (!predicates.isEmpty()) {
-            query.where(cb.and(predicates.toArray(new Predicate[0])));
-        }
+        return predicates;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -126,6 +128,9 @@ public class CriteriaBuilderDelegate {
     }
 
     public void addOrderBy(SortOrder byFields) {
+        if (byFields == null) {
+            return;
+        }
         var columns = new ArrayList<Order>();
         for (var field : byFields) {
             var column = root.get(field.getName());
