@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.delegate.criteria;
 
 import jakarta.persistence.criteria.*;
+import ro.iugori.yadvs.model.criteria.ProjectionFilter;
 import ro.iugori.yadvs.model.criteria.SelectionFilter;
 import ro.iugori.yadvs.model.criteria.SortOrder;
 import ro.iugori.yadvs.model.ctx.CallContext;
@@ -12,7 +13,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class CriteriaBuilderDelegate {
-
 
     private final CallContext callCtx;
     private final CriteriaBuilder cb;
@@ -26,7 +26,15 @@ public class CriteriaBuilderDelegate {
         this.root = root;
     }
 
-    public List<Predicate> addWhereConjunction(SelectionFilter filters) {
+    public List<Selection<?>> buildProjection(ProjectionFilter columns) {
+        var projection = new ArrayList<Selection<?>>();
+        for (var column : columns) {
+            projection.add(root.get(column));
+        }
+        return projection;
+    }
+
+    public List<Predicate> addWhereClauses(SelectionFilter filters) {
         var predicates = new ArrayList<Predicate>();
         if (filters != null) {
             for (var filter : filters) {
@@ -128,9 +136,6 @@ public class CriteriaBuilderDelegate {
     }
 
     public void addOrderBy(SortOrder byFields) {
-        if (byFields == null) {
-            return;
-        }
         var columns = new ArrayList<Order>();
         for (var field : byFields) {
             var column = root.get(field.getName());
@@ -141,5 +146,6 @@ public class CriteriaBuilderDelegate {
             query.orderBy(columns);
         }
     }
+
 
 }

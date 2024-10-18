@@ -44,6 +44,23 @@ class PollRepositoryCustomTest {
     }
 
     @Test
+    void projection() {
+        var qc = QueryCriteria.builder()
+                .select("name,description")
+                .where("name", "Future Usability Representative")
+                .build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        var poll = selection.get(0);
+        assertNull(poll.getId());
+        assertNotNull(poll.getName());
+        assertNotNull(poll.getDescription());
+        assertFalse(poll.isMultiOption());
+        assertNull(poll.getStatus());
+        assertNull(poll.getStart());
+        assertNull(poll.getEnd());
+    }
+
+    @Test
     void whereEQ() {
         var name = "Future Usability Representative";
         var qc = QueryCriteria.builder().where("name", name).build();

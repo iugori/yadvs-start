@@ -27,11 +27,19 @@ public record QueryCriteria(
     }
 
     public boolean isEmpty() {
-        return (projectionFilter == null || projectionFilter.isEmpty())
-                && (selectionFilter == null || selectionFilter.isEmpty())
-                && (sortOrder == null || sortOrder.isEmpty())
-                && offset == null
-                && limit == null;
+        return !isProjection() && !isSelection() && !isSort() && offset == null && limit == null;
+    }
+
+    public boolean isProjection() {
+        return projectionFilter != null && !projectionFilter.isEmpty();
+    }
+
+    public boolean isSelection() {
+        return selectionFilter != null && !selectionFilter.isEmpty();
+    }
+
+    public boolean isSort() {
+        return sortOrder != null && !sortOrder.isEmpty();
     }
 
 }
