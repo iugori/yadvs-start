@@ -203,4 +203,34 @@ class PollRepositoryCustomTest {
         assertEquals("Consultant", selection.get(0).getName());
     }
 
+    @Test
+    void page_1_4() {
+        var qc = QueryCriteria.builder().orderBy("id").page(1, 4).build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals(1, selection.get(0).getId());
+        assertEquals(4, selection.size());
+    }
+
+    @Test
+    void page_2_4() {
+        var qc = QueryCriteria.builder().orderBy("id").page(2, 4).build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals(5, selection.get(0).getId());
+        assertEquals(4, selection.size());
+    }
+
+    @Test
+    void page_2_20() {
+        var qc = QueryCriteria.builder().orderBy("id").page(2, 20).build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals(10, selection.size());
+    }
+
+    @Test
+    void page_3_20() {
+        var qc = QueryCriteria.builder().orderBy("id").page(3, 20).build();
+        var selection = customRepository.findByCriteria(testCtx, qc);
+        assertEquals(0, selection.size());
+    }
+
 }
