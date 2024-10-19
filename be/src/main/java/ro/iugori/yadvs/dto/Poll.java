@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import ro.iugori.yadvs.model.domain.PollStatus;
+import ro.iugori.yadvs.util.validation.XFieldComparison;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@XFieldComparison(field1 = "start", rel = "lt", field2 = "end")
 public class Poll {
 
     private Long id;

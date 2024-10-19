@@ -1,6 +1,6 @@
 package ro.iugori.yadvs.model.criteria;
 
-import ro.iugori.yadvs.delegate.criteria.QueryCriteriaBuilder;
+import ro.iugori.yadvs.delegate.query.QueryCriteriaBuilder;
 
 public record QueryCriteria(
         ProjectionFilter projectionFilter,

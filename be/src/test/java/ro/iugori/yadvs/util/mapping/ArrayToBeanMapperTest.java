@@ -23,8 +23,8 @@ class ArrayToBeanMapperTest {
 
     @Test
     void of() {
-        var mapper = ArrayToBeanMapper.of(B.class, List.of("name", "description"));
-        var bean = mapper.map(new Object[]{"Name", "Desc"});
+        var mapper = ArrayToBeanMapper.of(B.class, List.of("name", "some", "description"));
+        var bean = mapper.map(new Object[]{"Name", "Some", "Desc"});
         assertEquals("Name", bean.getName());
         assertEquals("Desc", bean.getDescription());
     }

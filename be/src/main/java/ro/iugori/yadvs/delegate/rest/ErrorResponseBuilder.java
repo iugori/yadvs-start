@@ -10,7 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.ctx.RestContext;
-import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;

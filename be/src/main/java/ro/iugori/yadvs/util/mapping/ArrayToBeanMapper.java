@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.util.mapping;
 
 import lombok.SneakyThrows;
+import ro.iugori.yadvs.util.reflection.ReflectionUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -13,18 +14,8 @@ public class ArrayToBeanMapper<B> {
     public static <T> ArrayToBeanMapper<T> of(Class<T> beanClazz, Iterable<String> fields) {
         var beanFields = new ArrayList<Field>();
         for (var fieldName : fields) {
-            Field field = null;
-            var clazz = (Class<?>) beanClazz;
-            while (clazz != null) {
-                try {
-                    field = clazz.getDeclaredField(fieldName);
-                    field.setAccessible(true);
-                    break;
-                } catch (NoSuchFieldException e) {
-                    clazz = clazz.getSuperclass();
-                }
-            }
-            beanFields.add(field);
+            ReflectionUtil.getDeclaredField(beanClazz, fieldName)
+                    .ifPresentOrElse(beanFields::add, () -> beanFields.add(null));
         }
         return new ArrayToBeanMapper<T>(beanClazz, beanFields.toArray(new Field[]{}));
     }
@@ -38,7 +29,10 @@ public class ArrayToBeanMapper<B> {
     public B map(Object[] array) {
         var bean = beanClazz.getConstructor().newInstance();
         for (int i = 0; i < beanFields.length; ++i) {
-            beanFields[i].set(bean, array[i]);
+            var field = beanFields[i];
+            if (field != null) {
+                field.set(bean, array[i]);
+            }
         }
         return bean;
     }

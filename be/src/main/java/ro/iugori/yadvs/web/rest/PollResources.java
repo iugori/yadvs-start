@@ -12,18 +12,16 @@ import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.error.YadvsRestException;
-import ro.iugori.yadvs.model.rest.MoreHttpHeaders;
-import ro.iugori.yadvs.model.rest.RestRequests;
+import ro.iugori.yadvs.web.RestApi;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
-import ro.iugori.yadvs.web.URIs;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = URIs.PATH_POLLS)
+@RequestMapping(path = RestApi.URI.Polls.ROOT)
 public class PollResources {
 
     private final PollService pollService;
@@ -34,16 +32,16 @@ public class PollResources {
 
     @PostMapping
     public ResponseEntity<?> postPoll(@Parameter(hidden = true) RestContext restCtx, @Check @RequestBody Poll poll) {
-        var prefer = StringUtils.trimToEmpty(restCtx.getRequest().getHeader(MoreHttpHeaders.PREFER));
+        var prefer = StringUtils.trimToEmpty(restCtx.getRequest().getHeader(RestApi.Header.PREFER));
         var entity = pollService.create(restCtx, poll);
         var headers = new LinkedMultiValueMap<String, String>();
         headers.put(HttpHeaders.LOCATION, List.of(restCtx.getRequest().getRequestURI() + "/" + entity.getId()));
-        if (prefer.equalsIgnoreCase(MoreHttpHeaders.Values.RETURN_MINIMAL)) {
-            headers.put(MoreHttpHeaders.PREFERENCE_APPLIED, List.of(prefer));
+        if (prefer.equalsIgnoreCase(RestApi.Header.Value.RETURN_MINIMAL)) {
+            headers.put(RestApi.Header.PREFERENCE_APPLIED, List.of(prefer));
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
-        if (prefer.equalsIgnoreCase(MoreHttpHeaders.Values.RETURN_REPRESENTATION)) {
-            headers.put(MoreHttpHeaders.PREFERENCE_APPLIED, List.of(prefer));
+        if (prefer.equalsIgnoreCase(RestApi.Header.Value.RETURN_REPRESENTATION)) {
+            headers.put(RestApi.Header.PREFERENCE_APPLIED, List.of(prefer));
         }
         return new ResponseEntity<>(PollMapper.dtoFrom(entity), headers, HttpStatus.CREATED);
     }
@@ -88,10 +86,10 @@ public class PollResources {
 
     @GetMapping
     public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
-            , @RequestParam(RestRequests.Params.FIELDS) Optional<String> fields
-            , @RequestParam(RestRequests.Params.SORT) Optional<String> sorting
-            , @RequestParam(RestRequests.Params.PAGE_NO) Optional<String> pageNo
-            , @RequestParam(RestRequests.Params.PAGE_SIZE) Optional<String> pageSize
+            , @RequestParam(RestApi.Param.FIELDS) Optional<String> fields
+            , @RequestParam(RestApi.Param.SORT) Optional<String> sorting
+            , @RequestParam(RestApi.Param.PAGE_NO) Optional<String> pageNo
+            , @RequestParam(RestApi.Param.PAGE_SIZE) Optional<String> pageSize
     ) {
         var qcBuilder = QueryCriteria.builder()
                 .select(fields.orElse(null))

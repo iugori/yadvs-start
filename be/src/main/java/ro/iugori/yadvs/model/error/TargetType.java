@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.model.domain;
+package ro.iugori.yadvs.model.error;
 
 public enum TargetType {
 

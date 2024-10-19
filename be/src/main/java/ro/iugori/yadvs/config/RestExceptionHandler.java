@@ -7,53 +7,65 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
-import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.ctx.CallContext;
+import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.YadvsRestException;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAnyException(Exception e) {
-        var callCtx = (RestContext) ((e instanceof YadvsRestException ye) ? ye.getCallCtx() : new RestContext());
+    @ExceptionHandler(YadvsRestException.class)
+    public ResponseEntity<Object> handleYadvsRestException(YadvsRestException ye) {
+        var callCtx = ye.getCallCtx();
 
-        if (e instanceof YadvsRestException ye) {
-            var errorResponse = ErrorResponseBuilder.responseOf(ye);
-            if (ye.getCause() instanceof CheckException ce) {
-                logException(callCtx, ce);
-                for (var error : ce.getErrors()) {
-                    if (ErrorCode.NOT_ALLOWED.code == error.getCodeAsInt()) {
-                        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
-                    }
+        var errorResponse = ErrorResponseBuilder.responseOf(ye);
+
+        var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (ye.getCause() instanceof CheckException ce) {
+            logException(callCtx, ce);
+            httpStatus = HttpStatus.BAD_REQUEST;
+            for (var error : ce.getErrors()) {
+                if (ErrorCode.NOT_ALLOWED.code == error.getCodeAsInt()) {
+                    httpStatus = HttpStatus.FORBIDDEN;
+                    break;
                 }
-                return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
             }
-            logException(callCtx, e);
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            logException(callCtx, ye);
         }
 
+        return new ResponseEntity<>(errorResponse, httpStatus);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        var callCtx = new RestContext();
         logException(callCtx, e);
+        var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.PARAMETER, e.getName());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
-        if (e instanceof MethodArgumentTypeMismatchException ex) {
-            var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.PARAMETER, ex.getName());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAnyOtherException(Exception e) {
+        var callCtx = new RestContext();
+        logException(callCtx, e);
 
         var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.URI, callCtx.getRequest().getRequestURI());
 
+        var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (e instanceof HttpRequestMethodNotSupportedException) {
-            return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+            httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
         }
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, httpStatus);
     }
 
-    private static void logException(RestContext callCtx, Exception e) {
+    private static void logException(CallContext callCtx, Exception e) {
         callCtx.getLogger().error(callCtx.getTraceId(), e);
     }
 

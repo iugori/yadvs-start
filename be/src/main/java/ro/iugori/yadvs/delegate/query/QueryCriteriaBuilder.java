@@ -1,15 +1,15 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.delegate.query;
 
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.model.criteria.ProjectionFilter;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.criteria.SelectionFilter;
 import ro.iugori.yadvs.model.criteria.SortOrder;
-import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
-import ro.iugori.yadvs.model.rest.RestRequests;
+import ro.iugori.yadvs.web.RestApi;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class QueryCriteriaBuilder {
             var error = new ErrorModel();
             error.setCode(ErrorCode.PROJECTION_CRITERIA);
             error.setMessage(e.getMessage());
-            error.setTarget(TargetType.PARAMETER, RestRequests.Params.FIELDS);
+            error.setTarget(TargetType.PARAMETER, RestApi.Param.FIELDS);
             errors.add(error);
         }
         return this;
@@ -88,7 +88,7 @@ public class QueryCriteriaBuilder {
             var error = new ErrorModel();
             error.setCode(ErrorCode.SORTING_CRITERIA);
             error.setMessage(e.getMessage());
-            error.setTarget(TargetType.PARAMETER, RestRequests.Params.SORT);
+            error.setTarget(TargetType.PARAMETER, RestApi.Param.SORT);
             errors.add(error);
         }
         return this;
@@ -104,7 +104,7 @@ public class QueryCriteriaBuilder {
                 var error = new ErrorModel();
                 error.setCode(ErrorCode.PAGINATION_CRITERIA);
                 error.setMessage(e.getMessage());
-                error.setTarget(TargetType.PARAMETER, RestRequests.Params.PAGE_NO);
+                error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_NO);
                 errors.add(error);
             }
         }
@@ -118,7 +118,7 @@ public class QueryCriteriaBuilder {
                 var error = new ErrorModel();
                 error.setCode(ErrorCode.PAGINATION_CRITERIA);
                 error.setMessage(e.getMessage());
-                error.setTarget(TargetType.PARAMETER, RestRequests.Params.PAGE_SIZE);
+                error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_SIZE);
                 errors.add(error);
             }
         }

@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.delegate.criteria;
+package ro.iugori.yadvs.delegate.query;
 
 import jakarta.persistence.criteria.*;
 import ro.iugori.yadvs.model.criteria.ProjectionFilter;

@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
-import ro.iugori.yadvs.delegate.criteria.CriteriaBuilderDelegate;
+import ro.iugori.yadvs.delegate.query.CriteriaBuilderDelegate;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.entity.PollEntity;

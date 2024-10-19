@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ro.iugori.yadvs.model.domain.TargetType;
 
 import java.io.Serializable;
 

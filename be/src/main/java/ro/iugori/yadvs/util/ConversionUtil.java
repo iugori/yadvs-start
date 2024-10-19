@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.util;
 
 import org.springframework.core.convert.support.DefaultConversionService;
-import ro.iugori.yadvs.util.converters.StringToLocalDateTimeConverter;
+import ro.iugori.yadvs.util.converter.StringToLocalDateTimeConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +14,13 @@ public class ConversionUtil {
 
     static {
         conversionService.addConverter(new StringToLocalDateTimeConverter());
+    }
+
+    public static boolean isBoolean(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        return obj instanceof Boolean;
     }
 
     public static <T> T as(Class<T> targetType, Object source) {

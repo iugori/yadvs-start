@@ -8,7 +8,7 @@ import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.domain.PollStatus;
-import ro.iugori.yadvs.model.domain.TargetType;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.entity.PollEntity;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
