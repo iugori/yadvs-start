@@ -1,5 +1,6 @@
-# A Spring Boot REST experiment
+## Digital Voting System – An Experimental Implementation
 
-This study features a basic implementation of the digital voting system described at [The Software Scaffold](https://iugori.ro/?p=13).
+This project showcases a basic implementation of a digital voting system, inspired by an article on [The Software Scaffold](https://iugori.ro/?p=13).
+It aims to explore best practices in building modern applications using Spring Boot for the backend and React.js for the frontend.
 
-Work in progress...
+⚠️ Note: This project is a work in progress, and some features are still under development.
