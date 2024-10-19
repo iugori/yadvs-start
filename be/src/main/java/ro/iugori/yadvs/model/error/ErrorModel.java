@@ -3,18 +3,18 @@ package ro.iugori.yadvs.model.error;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 
 @NoArgsConstructor
 @Getter
-public class ErrorModel implements Serializable {
+public class ErrorModel extends RepresentationModel<ErrorModel> implements Serializable {
 
     private String code;
     @Setter
     private String message;
-    @Setter
-    private String moreInfo;
     private ErrorTarget target;
 
     public void setTarget(TargetType type, String name) {
@@ -25,13 +25,14 @@ public class ErrorModel implements Serializable {
         code = String.format("%d: %s", errCode.code, errCode.name().toLowerCase());
     }
 
-    public int getCodeAsInt() {
+    public int codeAsInt() {
         return Integer.parseInt(getCode().split(":")[0]);
     }
 
-
     @Override
+    @NonNull
     public String toString() {
-        return String.format("%6d: %s", getCodeAsInt(), message);
+        return String.format("%6d: %s", codeAsInt(), message);
     }
+
 }

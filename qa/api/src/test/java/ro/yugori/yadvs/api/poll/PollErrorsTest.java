@@ -20,7 +20,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .get(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("errors[0].message", is("Cannot use projection field `a+b' (must be a valid Java identifier)."));
+                .body("_embedded.errors[0].message", is("Cannot use projection field `a+b' (must be a valid Java identifier)."));
     }
 
     @Test
@@ -32,8 +32,8 @@ public class PollErrorsTest extends PollBaseTest {
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("errors", hasSize(4))
-                .body("trace", notNullValue());
+                .body("_embedded.errors", hasSize(4))
+                .body("logRef", notNullValue());
     }
 
     @Test
@@ -47,8 +47,8 @@ public class PollErrorsTest extends PollBaseTest {
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll.name must be unique"));
+                .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class PollErrorsTest extends PollBaseTest {
                 .put(poll2Uri).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll.name must be unique"));
+                .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class PollErrorsTest extends PollBaseTest {
                 .patch(poll2Uri).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("errors", hasSize(1))
-                .body("errors[0].message", is("Poll.name must be unique"));
+                .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
 
     @Test

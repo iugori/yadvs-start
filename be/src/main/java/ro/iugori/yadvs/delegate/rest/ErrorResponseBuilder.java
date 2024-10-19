@@ -3,18 +3,14 @@ package ro.iugori.yadvs.delegate.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.metadata.ConstraintDescriptor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.hateoas.Link;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.ctx.RestContext;
-import ro.iugori.yadvs.model.error.TargetType;
-import ro.iugori.yadvs.model.error.CheckException;
-import ro.iugori.yadvs.model.error.ErrorCode;
-import ro.iugori.yadvs.model.error.ErrorModel;
-import ro.iugori.yadvs.model.error.YadvsRestException;
+import ro.iugori.yadvs.model.error.*;
 import ro.iugori.yadvs.model.rest.ErrorResponse;
 
 import java.util.Optional;
@@ -22,30 +18,25 @@ import java.util.Set;
 
 public class ErrorResponseBuilder {
 
-    public static ErrorResponse responseOf(CallContext callCtx) {
+    private static ErrorResponse errorsOf(CallContext callCtx) {
         var path = "N/A";
         if (callCtx instanceof RestContext restCtx && restCtx.getRequest() != null) {
             path = restCtx.getRequest().getRequestURI();
         }
-        return new ErrorResponse(callCtx.getTraceId(), callCtx.getTraceTs(), path);
+        return new ErrorResponse(callCtx.getLogRef(), callCtx.getTimeRef(), path);
     }
 
-    public static ErrorResponse responseOf(CallContext callCtx, Exception e) {
+    private static ErrorResponse errorsOf(CallContext callCtx, Exception e) {
         var error = new ErrorModel();
         error.setCode(toErrorCode(e));
         error.setMessage(e.getMessage());
-
-        if (e instanceof HttpRequestMethodNotSupportedException ex) {
-            error.setMoreInfo(String.valueOf(ex.getBody().getType()));
-        }
-
-        var errors = responseOf(callCtx);
+        var errors = errorsOf(callCtx);
         errors.add(error);
         return errors;
     }
 
-    public static ErrorResponse responseOf(YadvsRestException e) {
-        var errors = responseOf(e.getCallCtx());
+    public static ErrorResponse errorsOf(YadvsRestException e) {
+        var errors = errorsOf(e.getCallCtx());
 
         if (e.getCause() instanceof CheckException ex) {
             var cex = ex.getCause();
@@ -57,13 +48,13 @@ public class ErrorResponseBuilder {
             } else {
                 for (var error : ex.getErrors()) {
                     var errorClone = SerializationUtils.clone(error);
-                    errorClone.setMoreInfo(getSwaggerUrl(((RestContext) e.getCallCtx()).getRequest()));
+                    errorClone.add(Link.of(getSwaggerUrl(((RestContext) e.getCallCtx()).getRequest()), "swagger"));
                     errors.add(errorClone);
                 }
             }
         }
 
-        if (CollectionUtils.isEmpty(errors.getErrors())) {
+        if (errors.hasNoErrors()) {
             var error = new ErrorModel();
             error.setCode(toErrorCode(e));
             error.setMessage(e.getMessage());
@@ -73,27 +64,27 @@ public class ErrorResponseBuilder {
         return errors;
     }
 
-    public static ErrorResponse responseOf(RestContext restCtx, Exception e, TargetType targetType, String targetName) {
-        var errors = responseOf(restCtx, e);
-        var error = errors.getErrors().get(0);
-        if (error.getMoreInfo() == null) {
-            error.setMoreInfo(getSwaggerUrl(restCtx.getRequest()));
+    public static ErrorResponse errorsOf(RestContext restCtx, Exception e, TargetType targetType, String targetName) {
+        var errors = errorsOf(restCtx, e);
+        var error = errors.getError(0);
+        if (error.getLinks().isEmpty()) {
+            error.add(Link.of(getSwaggerUrl(restCtx.getRequest()), "swagger"));
         }
         error.setTarget(targetType, targetName);
         return errors;
     }
 
-    public static <T> ErrorResponse responseOf(RestContext restCtx, Set<ConstraintViolation<T>> validationResult) {
-        var errors = responseOf(restCtx);
+    public static <T> ErrorResponse errorsOf(RestContext restCtx, Set<ConstraintViolation<T>> validationResult) {
+        var errors = errorsOf(restCtx);
         validationResult.forEach(constraint -> {
-            var error = buildErrorModel(constraint);
-            error.setMoreInfo(getSwaggerUrl(restCtx.getRequest()));
+            var error = errorOf(constraint);
+            error.add(Link.of(getSwaggerUrl(restCtx.getRequest()), "swagger"));
             errors.add(error);
         });
         return errors;
     }
 
-    public static <T> ErrorModel buildErrorModel(ConstraintViolation<T> constraint) {
+    public static <T> ErrorModel errorOf(ConstraintViolation<T> constraint) {
         var error = new ErrorModel();
         error.setCode(toErrorCode(constraint.getConstraintDescriptor()));
         error.setMessage(constraint.getMessage());

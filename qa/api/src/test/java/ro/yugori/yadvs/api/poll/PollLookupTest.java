@@ -25,8 +25,8 @@ public class PollLookupTest extends PollBaseTest {
                 .get(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_OK);
-        var bodyJson = bodyAsJSONArray(rr);
-        assertThat(bodyJson.length()).isGreaterThanOrEqualTo(DUMMY_POLL_NO);
+        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        assertThat(polls.length()).isGreaterThanOrEqualTo(DUMMY_POLL_NO);
     }
 
     @Test

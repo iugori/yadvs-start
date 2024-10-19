@@ -23,14 +23,14 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleYadvsRestException(YadvsRestException ye) {
         var callCtx = ye.getCallCtx();
 
-        var errorResponse = ErrorResponseBuilder.responseOf(ye);
+        var errorResponse = ErrorResponseBuilder.errorsOf(ye);
 
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (ye.getCause() instanceof CheckException ce) {
             logException(callCtx, ce);
             httpStatus = HttpStatus.BAD_REQUEST;
             for (var error : ce.getErrors()) {
-                if (ErrorCode.NOT_ALLOWED.code == error.getCodeAsInt()) {
+                if (ErrorCode.NOT_ALLOWED.code == error.codeAsInt()) {
                     httpStatus = HttpStatus.FORBIDDEN;
                     break;
                 }
@@ -46,7 +46,7 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         var callCtx = new RestContext();
         logException(callCtx, e);
-        var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.PARAMETER, e.getName());
+        var errorResponse = ErrorResponseBuilder.errorsOf(callCtx, e, TargetType.PARAMETER, e.getName());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -55,7 +55,7 @@ public class RestExceptionHandler {
         var callCtx = new RestContext();
         logException(callCtx, e);
 
-        var errorResponse = ErrorResponseBuilder.responseOf(callCtx, e, TargetType.URI, callCtx.getRequest().getRequestURI());
+        var errorResponse = ErrorResponseBuilder.errorsOf(callCtx, e, TargetType.URI, callCtx.getRequest().getRequestURI());
 
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (e instanceof HttpRequestMethodNotSupportedException) {
@@ -66,7 +66,7 @@ public class RestExceptionHandler {
     }
 
     private static void logException(CallContext callCtx, Exception e) {
-        callCtx.getLogger().error(callCtx.getTraceId(), e);
+        callCtx.getLogger().error(callCtx.getLogRef(), e);
     }
 
 }

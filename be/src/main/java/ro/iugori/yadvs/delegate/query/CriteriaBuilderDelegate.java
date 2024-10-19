@@ -43,7 +43,7 @@ public class CriteriaBuilderDelegate {
                     var predicate = buildPredicate(path, filter);
                     predicate.ifPresent(predicates::add);
                 } catch (IllegalStateException | IllegalArgumentException ex) {
-                    callCtx.getLogger().warn("{} {}", callCtx.getTraceId(), ex.getMessage());
+                    callCtx.getLogger().warn("{} {}", callCtx.getLogRef(), ex.getMessage());
                 }
             }
             if (!predicates.isEmpty()) {

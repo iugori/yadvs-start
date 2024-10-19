@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
-import ro.iugori.yadvs.dto.Poll;
+import ro.iugori.yadvs.model.rest.Poll;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.domain.PollStatus;
 import ro.iugori.yadvs.model.error.TargetType;
@@ -71,7 +71,7 @@ public class PollService {
             dto = PollMapper.dtoFrom(entity);
             var validationResult = validator.validate(dto);
             if (!validationResult.isEmpty()) {
-                var errors = validationResult.stream().map(ErrorResponseBuilder::buildErrorModel).toArray(ErrorModel[]::new);
+                var errors = validationResult.stream().map(ErrorResponseBuilder::errorOf).toArray(ErrorModel[]::new);
                 throw new CheckException(errors);
             }
         }
@@ -115,7 +115,7 @@ public class PollService {
     private void checkNameIsUnique(CallContext callCtx, String name) {
         var optEntity = pollRepository.findByName(name);
         if (optEntity.isPresent()) {
-            log.error("{} Poll name already exists: `{}'.", callCtx.getTraceId(), name);
+            log.error("{} Poll name already exists: `{}'.", callCtx.getLogRef(), name);
             var error = new ErrorModel();
             error.setCode(ErrorCode.VALUE_CONFLICT);
             error.setMessage("Poll.name must be unique");

@@ -14,10 +14,10 @@ public class CallContext {
     }
 
     @Getter
-    private final String traceId = nextUuid();
+    private final String logRef = nextUuid();
 
     @Getter
-    private final LocalDateTime traceTs = LocalDateTime.now();
+    private final LocalDateTime timeRef = LocalDateTime.now();
 
     @Getter
     private final Logger logger;

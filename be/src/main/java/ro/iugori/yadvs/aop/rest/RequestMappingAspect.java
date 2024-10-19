@@ -36,7 +36,7 @@ public class RequestMappingAspect {
                 if (annotation instanceof Check) {
                     var validationResult = validator.validate(args[i]);
                     if (!validationResult.isEmpty()) {
-                        var errors = ErrorResponseBuilder.responseOf(getRestContext(args), validationResult);
+                        var errors = ErrorResponseBuilder.errorsOf(getRestContext(args), validationResult);
                         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
                     }
                     break;

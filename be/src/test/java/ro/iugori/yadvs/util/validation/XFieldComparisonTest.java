@@ -3,7 +3,7 @@ package ro.iugori.yadvs.util.validation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
-import ro.iugori.yadvs.dto.Poll;
+import ro.iugori.yadvs.model.rest.Poll;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -1,9 +1,10 @@
-package ro.iugori.yadvs.dto;
+package ro.iugori.yadvs.model.rest;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 import ro.iugori.yadvs.model.domain.PollStatus;
 import ro.iugori.yadvs.util.validation.XFieldComparison;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @XFieldComparison(field1 = "start", rel = "lt", field2 = "end")
-public class Poll {
+public class Poll extends RepresentationModel<Poll> {
 
     private Long id;
 

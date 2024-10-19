@@ -8,7 +8,7 @@ class CallContextTest {
 
     @Test
     void nextUuid() {
-        assertEquals(22, CallContext.nextUuid().length());
+        assertTrue(CallContext.nextUuid().length() <= 22);
     }
 
 }

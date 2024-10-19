@@ -2,23 +2,26 @@ package ro.iugori.yadvs.web.rest;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.ctx.RestContext;
-import ro.iugori.yadvs.dto.Poll;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
+import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.error.YadvsRestException;
-import ro.iugori.yadvs.web.RestApi;
+import ro.iugori.yadvs.model.rest.Poll;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
+import ro.iugori.yadvs.web.RestApi;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping(path = RestApi.URI.Polls.ROOT)
@@ -79,13 +82,16 @@ public class PollResources {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPoll(@PathVariable("id") long id) {
         var optPoll = pollService.findById(id);
-        return optPoll.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
+        if (optPoll.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        var poll = PollMapper.dtoFrom(optPoll.get());
+        poll.add(linkTo(PollResources.class).slash(id).withSelfRel());
+        return new ResponseEntity<>(poll, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
+    public ResponseEntity<CollectionModel<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
             , @RequestParam(RestApi.Param.FIELDS) Optional<String> fields
             , @RequestParam(RestApi.Param.SORT) Optional<String> sorting
             , @RequestParam(RestApi.Param.PAGE_NO) Optional<String> pageNo
@@ -112,8 +118,14 @@ public class PollResources {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        var dtoList = entityList.stream().map(PollMapper::dtoFrom).collect(Collectors.toList());
-        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+        var dtoList = entityList.stream()
+                .map(entity -> {
+                    var dto = PollMapper.dtoFrom(entity);
+                    dto.add(linkTo(PollResources.class).slash(dto.getId()).withSelfRel());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(CollectionModel.of(dtoList), HttpStatus.OK);
     }
 
 }
