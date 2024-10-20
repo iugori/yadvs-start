@@ -13,7 +13,7 @@ class QueryCriteriaBuilderTest {
     void builder() throws ParseException {
         var qc = QueryCriteria.builder()
                 .select("a,b,c")
-                .where("a[gt]", "27")
+                .where("a~gt", "27")
                 .orderBy("c,-d")
                 .page(2, 10)
                 .build();

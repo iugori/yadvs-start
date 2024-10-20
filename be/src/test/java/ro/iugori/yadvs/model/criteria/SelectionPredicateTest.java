@@ -24,7 +24,7 @@ class SelectionPredicateTest {
     @Test
     void parse2() throws ParseException {
         assertEquals("a=b", SelectionFilter.Predicate.parse(" a ", "b").toString());
-        assertEquals("a[gt]=b", SelectionFilter.Predicate.parse(" a [ > ] ", "b").toString());
+        assertEquals("a~gt=b", SelectionFilter.Predicate.parse(" a ~ > ", "b").toString());
     }
 
     @Test
@@ -42,19 +42,15 @@ class SelectionPredicateTest {
                 .withMessage("Cannot parse selection predicate with field `a]' (must be a valid Java identifier).");
 
         assertThatExceptionOfType(ParseException.class)
-                .isThrownBy(() -> SelectionFilter.Predicate.parse("[gt]", "b"))
-                .withMessage("Cannot parse selection predicate without name.");
+                .isThrownBy(() -> SelectionFilter.Predicate.parse("~gt", "b"))
+                .withMessage("Cannot parse selection predicate with field `~gt' (must be a valid Java identifier).");
 
         assertThatExceptionOfType(ParseException.class)
-                .isThrownBy(() -> SelectionFilter.Predicate.parse("a[gt]x", "b"))
-                .withMessage("Cannot parse selection predicate with invalid operation specifier.");
-
-        assertThatExceptionOfType(ParseException.class)
-                .isThrownBy(() -> SelectionFilter.Predicate.parse("a[x]", "b"))
+                .isThrownBy(() -> SelectionFilter.Predicate.parse("a~x", "b"))
                 .withMessage("Cannot parse selection predicate operator `x'.");
 
         assertThatExceptionOfType(ParseException.class)
-                .isThrownBy(() -> SelectionFilter.Predicate.parse("23[gt]", "20"))
+                .isThrownBy(() -> SelectionFilter.Predicate.parse("23~gt", "20"))
                 .withMessage("Cannot parse selection predicate with field `23' (must be a valid Java identifier).");
     }
 

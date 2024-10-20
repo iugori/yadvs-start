@@ -71,14 +71,14 @@ class PollRepositoryCustomTest {
     @Test
     void whereNE() {
         var name = "District Program Specialist";
-        var qc = QueryCriteria.builder().where("name[ne]", name).build();
+        var qc = QueryCriteria.builder().where("name~ne", name).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(29, selection.size());
     }
 
     @Test
     void whereISTrue() {
-        var qc = QueryCriteria.builder().where("multiOption[is]", true).build();
+        var qc = QueryCriteria.builder().where("multiOption~is", true).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(14, selection.size());
         assertTrue(selection.get(0).isMultiOption());
@@ -86,7 +86,7 @@ class PollRepositoryCustomTest {
 
     @Test
     void whereISFalse() {
-        var qc = QueryCriteria.builder().where("multiOption[is]", false).build();
+        var qc = QueryCriteria.builder().where("multiOption~is", false).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(16, selection.size());
     }
@@ -94,8 +94,8 @@ class PollRepositoryCustomTest {
     @Test
     void whereISNull() {
         var qc = QueryCriteria.builder()
-                .where("start[is]", "null")
-                .where("end[is]", "null")
+                .where("start~is", "null")
+                .where("end~is", "null")
                 .build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(1, selection.size());
@@ -106,8 +106,8 @@ class PollRepositoryCustomTest {
     @Test
     void whereISNotNull() {
         var qc = QueryCriteria.builder()
-                .where("start[is]", "null")
-                .where("end[is]", "notnull")
+                .where("start~is", "null")
+                .where("end~is", "notnull")
                 .build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(1, selection.size());
@@ -117,84 +117,84 @@ class PollRepositoryCustomTest {
 
     @Test
     void whereLTNumeric() {
-        var qc = QueryCriteria.builder().where("id[lt]", 4).build();
+        var qc = QueryCriteria.builder().where("id~lt", 4).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(3, selection.size());
     }
 
     @Test
     void whereLTNonNumeric() {
-        var qc = QueryCriteria.builder().where("start[lt]", "2024-10-10T14:54:50.769").build();
+        var qc = QueryCriteria.builder().where("start~lt", "2024-10-10T14:54:50.769").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(9, selection.size());
     }
 
     @Test
     void whereLENumeric() {
-        var qc = QueryCriteria.builder().where("id[le]", 4).build();
+        var qc = QueryCriteria.builder().where("id~le", 4).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(4, selection.size());
     }
 
     @Test
     void whereLENonNumeric() {
-        var qc = QueryCriteria.builder().where("start[le]", "2024-10-10T14:54:50.769").build();
+        var qc = QueryCriteria.builder().where("start~le", "2024-10-10T14:54:50.769").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(10, selection.size());
     }
 
     @Test
     void whereGTNumeric() {
-        var qc = QueryCriteria.builder().where("id[gt]", 4).build();
+        var qc = QueryCriteria.builder().where("id~gt", 4).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(26, selection.size());
     }
 
     @Test
     void whereLGTNonNumeric() {
-        var qc = QueryCriteria.builder().where("start[gt]", "2024-10-10T14:54:50.769").build();
+        var qc = QueryCriteria.builder().where("start~gt", "2024-10-10T14:54:50.769").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(18, selection.size());
     }
 
     @Test
     void whereGENumeric() {
-        var qc = QueryCriteria.builder().where("id[ge]", 4).build();
+        var qc = QueryCriteria.builder().where("id~ge", 4).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(27, selection.size());
     }
 
     @Test
     void whereGENonNumeric() {
-        var qc = QueryCriteria.builder().where("start[ge]", "2024-10-10T14:54:50.769").build();
+        var qc = QueryCriteria.builder().where("start~ge", "2024-10-10T14:54:50.769").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(19, selection.size());
     }
 
     @Test
     void whereLike() {
-        var qc = QueryCriteria.builder().where("description[like]", "non").build();
+        var qc = QueryCriteria.builder().where("description~like", "non").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(7, selection.size());
     }
 
     @Test
     void whereUnlike() {
-        var qc = QueryCriteria.builder().where("description[unlike]", "non").build();
+        var qc = QueryCriteria.builder().where("description~unlike", "non").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(23, selection.size());
     }
 
     @Test
     void whereINNumeric() {
-        var qc = QueryCriteria.builder().where("id[in]", "11,12,13").build();
+        var qc = QueryCriteria.builder().where("id~in", "11,12,13").build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(3, selection.size());
     }
 
     @Test
     void whereINText() {
-        var qc = QueryCriteria.builder().where("name[in]", List.of("Manager", "Dreamer", "Consultant")).build();
+        var qc = QueryCriteria.builder().where("name~in", List.of("Manager", "Dreamer", "Consultant")).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(2, selection.size());
     }

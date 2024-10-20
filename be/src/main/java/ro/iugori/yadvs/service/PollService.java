@@ -2,17 +2,18 @@ package ro.iugori.yadvs.service;
 
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
-import ro.iugori.yadvs.model.rest.Poll;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
+import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.domain.PollStatus;
-import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.entity.PollEntity;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
+import ro.iugori.yadvs.model.error.TargetType;
+import ro.iugori.yadvs.model.rest.Poll;
 import ro.iugori.yadvs.repository.PollRepository;
 import ro.iugori.yadvs.repository.PollRepositoryCustom;
 import ro.iugori.yadvs.util.mapping.PollMapper;
@@ -112,12 +113,20 @@ public class PollService {
         return pollRepositoryCustom.findByCriteria(callCtx, qc);
     }
 
+    public Pair<List<PollEntity>, Long> findAndCount(CallContext callCtx, QueryCriteria qc) {
+        if (qc == null || qc.isEmpty()) {
+            var records = pollRepository.findAll();
+            return Pair.of(records, (long) records.size());
+        }
+        return pollRepositoryCustom.findByCriteriaAndCountTotal(callCtx, qc);
+    }
+
     private void checkNameIsUnique(CallContext callCtx, String name) {
         var optEntity = pollRepository.findByName(name);
         if (optEntity.isPresent()) {
             log.error("{} Poll name already exists: `{}'.", callCtx.getLogRef(), name);
             var error = new ErrorModel();
-            error.setCode(ErrorCode.VALUE_CONFLICT);
+            error.setCode(ErrorCode.RESOURCE_CONFLICT);
             error.setMessage("Poll.name must be unique");
             error.setTarget(TargetType.FIELD, "name");
             throw new CheckException(error);

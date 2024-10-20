@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.util.TextUtil;
+import ro.iugori.yadvs.web.RestApi;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -74,13 +75,9 @@ public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
             }
 
             var op = Operator.EQ;
-            var opStartIdx = name.indexOf("[");
-            if (opStartIdx >= 0) {
-                var opEndIdx = name.lastIndexOf("]");
-                if (opEndIdx != name.length() - 1) {
-                    throw new ParseException("Cannot parse selection predicate with invalid operation specifier.", name.length() - opEndIdx);
-                }
-                var opScript = name.substring(opStartIdx + 1, opEndIdx);
+            var opStartIdx = name.lastIndexOf(RestApi.RESERVED_PARAM);
+            if (opStartIdx > 0) {
+                var opScript = name.substring(opStartIdx + 1);
                 op = Operator.parse(opScript);
 
                 name = StringUtils.trimToNull(name.substring(0, opStartIdx));
@@ -102,7 +99,7 @@ public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
         public String toString() {
             var rep = new StringBuilder(name);
             if (op != Operator.EQ) {
-                rep.append("[").append(op.hints.get(0)).append("]");
+                rep.append(RestApi.RESERVED_PARAM).append(op.hints.get(0));
             }
             return rep.append("=").append(value).toString();
         }

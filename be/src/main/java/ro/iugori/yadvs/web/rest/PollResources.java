@@ -105,7 +105,7 @@ public class PollResources {
         var queryParams = restCtx.getRequest().getParameterMap();
         for (var entry : queryParams.entrySet()) {
             var key = entry.getKey();
-            if (!key.startsWith("~")) {
+            if (!key.startsWith(RestApi.RESERVED_PARAM)) {
                 var value = entry.getValue();
                 if (value != null) {
                     qcBuilder.where(key, value.length == 1 ? value[0] : value);
@@ -113,19 +113,23 @@ public class PollResources {
             }
         }
 
-        var entityList = pollService.find(restCtx, qcBuilder.build());
-        if (entityList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        var records = pollService.findAndCount(restCtx, qcBuilder.build());
+
+        var headers = new LinkedMultiValueMap<String, String>();
+        headers.put(RestApi.Header.X_TOTAL_COUNT, List.of(String.valueOf(records.getSecond())));
+
+        if (records.getFirst().isEmpty()) {
+            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
 
-        var dtoList = entityList.stream()
+        var dtoList = records.getFirst().stream()
                 .map(entity -> {
                     var dto = PollMapper.dtoFrom(entity);
                     dto.add(linkTo(PollResources.class).slash(dto.getId()).withSelfRel());
                     return dto;
                 })
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(CollectionModel.of(dtoList), HttpStatus.OK);
+        return new ResponseEntity<>(CollectionModel.of(dtoList), headers, HttpStatus.OK);
     }
 
 }

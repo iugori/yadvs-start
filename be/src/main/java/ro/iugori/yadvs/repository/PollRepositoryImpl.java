@@ -3,7 +3,6 @@ package ro.iugori.yadvs.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
 import ro.iugori.yadvs.delegate.query.CriteriaBuilderDelegate;
@@ -68,10 +67,12 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
 
         var totalCount = 0L;
         // counting total - no need to run the counter query if pagination is not applied
-        if (countTotal && runCountQuery == 0) {
+        if (countTotal && runCountQuery > 0) {
             var countQuery = cb.createQuery(Long.class);
-            var recordCount = countQuery.from(PollEntity.class);
-            countQuery.select(cb.count(recordCount)).where(cb.and(predicates.toArray(new Predicate[0])));
+            var countEntity = countQuery.from(PollEntity.class);
+            var countDelegate = new CriteriaBuilderDelegate(callCtx, cb, countQuery, countEntity);
+            countQuery.select(cb.count(countEntity));
+            countDelegate.addWhereClauses(qc.selectionFilter());
             totalCount = entityManager.createQuery(countQuery).getSingleResult();
         }
 
@@ -80,7 +81,7 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
             var mapper = ArrayToBeanMapper.of(PollEntity.class, qc.projectionFilter());
             result = result.stream().map(a -> mapper.map((Object[]) a)).collect(Collectors.toList());
         }
-        if (runCountQuery != 0) {
+        if (runCountQuery == 0) {
             totalCount = result.size();
         }
         return Pair.of((List<PollEntity>) result, totalCount);
