@@ -244,10 +244,26 @@ class PollRepositoryCustomTest {
     }
 
     @Test
+    void page_1_20_andCountTotal() {
+        var qc = QueryCriteria.builder().orderBy("id").page(1, 20).build();
+        var selection = customRepository.findByCriteriaAndCountTotal(testCtx, qc);
+        assertEquals(20, selection.getFirst().size());
+        assertEquals(30, selection.getSecond());
+    }
+
+    @Test
     void page_3_20_andCountTotal() {
         var qc = QueryCriteria.builder().orderBy("id").page(3, 20).build();
         var selection = customRepository.findByCriteriaAndCountTotal(testCtx, qc);
         assertEquals(0, selection.getFirst().size());
+        assertEquals(30, selection.getSecond());
+    }
+
+    @Test
+    void countTotal() {
+        var qc = QueryCriteria.builder().orderBy("id").build();
+        var selection = customRepository.findByCriteriaAndCountTotal(testCtx, qc);
+        assertEquals(30, selection.getFirst().size());
         assertEquals(30, selection.getSecond());
     }
 

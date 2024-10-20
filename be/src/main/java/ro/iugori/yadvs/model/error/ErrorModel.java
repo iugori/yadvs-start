@@ -15,10 +15,12 @@ public class ErrorModel extends RepresentationModel<ErrorModel> implements Seria
     private String code;
     @Setter
     private String message;
-    private ErrorTarget target;
+    private String target;
+    private TargetType targetType;
 
     public void setTarget(TargetType type, String name) {
-        this.target = new ErrorTarget(type, name);
+        this.targetType = type;
+        this.target = name;
     }
 
     public void setCode(ErrorCode errCode) {

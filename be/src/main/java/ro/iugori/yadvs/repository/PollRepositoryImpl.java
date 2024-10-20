@@ -55,19 +55,16 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
 
         // pagination
         var typedQuery = entityManager.createQuery(query);
-        var runCountQuery = 2;
         if (qc.offset() != null && qc.offset() > 0) {
             typedQuery.setFirstResult(qc.offset());
-            runCountQuery--;
         }
         if (qc.limit() != null && qc.limit() > 0) {
             typedQuery.setMaxResults(qc.limit());
-            runCountQuery--;
         }
 
-        var totalCount = 0L;
+        Long totalCount = null;
         // counting total - no need to run the counter query if pagination is not applied
-        if (countTotal && runCountQuery > 0) {
+        if (countTotal && qc.offset() != null && qc.limit() != null) {
             var countQuery = cb.createQuery(Long.class);
             var countEntity = countQuery.from(PollEntity.class);
             var countDelegate = new CriteriaBuilderDelegate(callCtx, cb, countQuery, countEntity);
@@ -81,8 +78,8 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
             var mapper = ArrayToBeanMapper.of(PollEntity.class, qc.projectionFilter());
             result = result.stream().map(a -> mapper.map((Object[]) a)).collect(Collectors.toList());
         }
-        if (runCountQuery == 0) {
-            totalCount = result.size();
+        if (totalCount == null) {
+            totalCount = (long) result.size();
         }
         return Pair.of((List<PollEntity>) result, totalCount);
     }
