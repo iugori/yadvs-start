@@ -5,10 +5,7 @@ import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
-import ro.yugori.yadvs.api.ApiTest;
-import ro.yugori.yadvs.api.MimeType;
-import ro.yugori.yadvs.api.MoreHttpHeaders;
-import ro.yugori.yadvs.api.Setup;
+import ro.yugori.yadvs.api.*;
 import ro.yugori.yadvs.api.dto.Poll;
 import ro.yugori.yadvs.api.model.PollStatus;
 
@@ -53,8 +50,9 @@ public class PollBaseTest extends ApiTest {
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_CREATED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .header(HttpHeaders.LOCATION, containsString(POLLS_URI))
-                .header(MoreHttpHeaders.PREFERENCE_APPLIED, blankOrNullString())
+                .header(RestApi.Header.PREFERENCE_APPLIED, blankOrNullString())
                 .body("id", notNullValue())
                 .body("name", is(poll.getName()))
                 .body("description", is(poll.getDescription()))
@@ -71,7 +69,8 @@ public class PollBaseTest extends ApiTest {
                 when()
                 .delete(buildPollUri(id)).
                 then()
-                .statusCode(in(List.of(HttpStatus.SC_NO_CONTENT, HttpStatus.SC_NOT_FOUND)));
+                .statusCode(in(List.of(HttpStatus.SC_NO_CONTENT, HttpStatus.SC_NOT_FOUND)))
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
     }
 
     protected static void registerPollIdForDeletion(long pollId) {

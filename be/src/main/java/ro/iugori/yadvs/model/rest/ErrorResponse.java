@@ -3,6 +3,7 @@ package ro.iugori.yadvs.model.rest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.util.TimeUtil;
@@ -14,12 +15,14 @@ import java.util.List;
 public class ErrorResponse extends RepresentationModel<ErrorResponse> {
 
     @Getter
+    @Setter
+    private int status;
+
+    @Getter
     private final String path;
 
-    @Getter
     private final String timeRef;
 
-    @Getter
     private final String logRef;
 
     private final List<ErrorModel> errors = new ArrayList<>();
@@ -41,6 +44,16 @@ public class ErrorResponse extends RepresentationModel<ErrorResponse> {
 
     public boolean hasNoErrors() {
         return errors.isEmpty();
+    }
+
+    @JsonProperty("timeref")
+    public String getTimeRef() {
+        return timeRef;
+    }
+
+    @JsonProperty("logref")
+    public String getLogRef() {
+        return logRef;
     }
 
     @JsonProperty("_embedded")

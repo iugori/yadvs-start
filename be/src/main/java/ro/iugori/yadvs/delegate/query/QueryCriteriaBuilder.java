@@ -5,10 +5,10 @@ import ro.iugori.yadvs.model.criteria.ProjectionFilter;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.criteria.SelectionFilter;
 import ro.iugori.yadvs.model.criteria.SortOrder;
-import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.web.RestApi;
 
 import java.text.ParseException;
@@ -108,12 +108,22 @@ public class QueryCriteriaBuilder {
                 errors.add(error);
             }
         }
+        if (pageNo != null && pageNo < 1) {
+            var error = new ErrorModel();
+            error.setCode(ErrorCode.PAGINATION_CRITERIA);
+            error.setMessage("Must be greater than or equal to 1.");
+            error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_NO);
+            errors.add(error);
+        }
 
         Integer pageSize = null;
         pageSizeStr = StringUtils.trimToNull(pageSizeStr);
         if (pageSizeStr != null) {
             try {
                 pageSize = Integer.parseInt(pageSizeStr);
+                if (pageNo == null) {
+                    pageNo = 1;
+                }
             } catch (NumberFormatException e) {
                 var error = new ErrorModel();
                 error.setCode(ErrorCode.PAGINATION_CRITERIA);
@@ -121,6 +131,23 @@ public class QueryCriteriaBuilder {
                 error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_SIZE);
                 errors.add(error);
             }
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            var error = new ErrorModel();
+            error.setCode(ErrorCode.PAGINATION_CRITERIA);
+            error.setMessage("Must be greater than or equal to 1.");
+            error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_SIZE);
+            errors.add(error);
+        }
+
+        if (pageNo != null && pageSize == null) {
+            var error = new ErrorModel();
+            error.setCode(ErrorCode.PAGINATION_CRITERIA);
+            error.setMessage(String.format("Cannot have `%s' without `%s'.",
+                    RestApi.Param.PAGE_NO, RestApi.Param.PAGE_SIZE));
+            error.setTarget(TargetType.PARAMETER, RestApi.Param.PAGE_NO);
+            errors.add(error);
         }
 
         return page(pageNo, pageSize);

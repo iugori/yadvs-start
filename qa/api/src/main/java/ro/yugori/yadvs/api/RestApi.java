@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.web;
+package ro.yugori.yadvs.api;
 
 public interface RestApi {
 
@@ -36,3 +36,4 @@ public interface RestApi {
     }
 
 }
+

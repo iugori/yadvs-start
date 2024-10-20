@@ -4,6 +4,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.MimeType;
+import ro.yugori.yadvs.api.RestApi;
 import ro.yugori.yadvs.api.dto.Poll;
 import ro.yugori.yadvs.api.model.PollStatus;
 
@@ -11,8 +12,7 @@ import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static ro.yugori.yadvs.api.util.LocalDateTimeMatchers.sameAs;
 
 public class PollCrudTest extends PollBaseTest {
@@ -35,6 +35,7 @@ public class PollCrudTest extends PollBaseTest {
                 .put(pollUri).
                 then()
                 .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("name", is(poll.getName()))
                 .body("description", is(poll.getDescription()))
                 .body("status", is(PollStatus.DRAFT.name()))
@@ -63,6 +64,7 @@ public class PollCrudTest extends PollBaseTest {
                 .patch(pollUri).
                 then()
                 .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("name", is(poll.getName()))
                 .body("description", is(poll.getDescription()))
                 .body("status", is(PollStatus.DRAFT.name()))
@@ -84,6 +86,7 @@ public class PollCrudTest extends PollBaseTest {
                 .get(pollUri).
                 then()
                 .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("name", is(poll.getName()))
                 .body("description", is(poll.getDescription()))
                 .body("status", is(PollStatus.DRAFT.name()))
@@ -93,25 +96,29 @@ public class PollCrudTest extends PollBaseTest {
                 when()
                 .delete(pollUri).
                 then()
-                .statusCode(HttpStatus.SC_NO_CONTENT);
+                .statusCode(HttpStatus.SC_NO_CONTENT)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
         given().
                 when()
                 .get(pollUri).
                 then()
-                .statusCode(HttpStatus.SC_NOT_FOUND);
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
         given().
                 when()
                 .delete(pollUri).
                 then()
-                .statusCode(HttpStatus.SC_NOT_FOUND);
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
         given().
                 when()
                 .get(pollUri).
                 then()
-                .statusCode(HttpStatus.SC_NOT_FOUND);
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
     }
 
 }

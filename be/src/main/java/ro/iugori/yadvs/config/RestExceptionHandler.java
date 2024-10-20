@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -11,9 +12,10 @@ import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
-import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.YadvsRestException;
+import ro.iugori.yadvs.model.rest.ErrorResponse;
+import ro.iugori.yadvs.web.RestApi;
 
 @RestControllerAdvice
 @Slf4j
@@ -29,17 +31,11 @@ public class RestExceptionHandler {
         if (ye.getCause() instanceof CheckException ce) {
             logException(callCtx, ce);
             httpStatus = HttpStatus.BAD_REQUEST;
-            for (var error : ce.getErrors()) {
-                if (ErrorCode.NOT_ALLOWED.code == error.codeAsInt()) {
-                    httpStatus = HttpStatus.FORBIDDEN;
-                    break;
-                }
-            }
         } else {
             logException(callCtx, ye);
         }
 
-        return new ResponseEntity<>(errorResponse, httpStatus);
+        return buildResponseEntity(errorResponse, httpStatus);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -47,7 +43,7 @@ public class RestExceptionHandler {
         var callCtx = new RestContext();
         logException(callCtx, e);
         var errorResponse = ErrorResponseBuilder.errorsOf(callCtx, e, TargetType.PARAMETER, e.getName());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return buildResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
@@ -62,11 +58,18 @@ public class RestExceptionHandler {
             httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
         }
 
-        return new ResponseEntity<>(errorResponse, httpStatus);
+        return buildResponseEntity(errorResponse, httpStatus);
     }
 
     private static void logException(CallContext callCtx, Exception e) {
         callCtx.getLogger().error(callCtx.getLogRef(), e);
+    }
+
+    private static ResponseEntity<Object> buildResponseEntity(ErrorResponse body, HttpStatus status) {
+        body.setStatus(status.value());
+        var headers = new HttpHeaders();
+        headers.add(RestApi.Header.X_CORRELATION_ID, body.getLogRef());
+        return new ResponseEntity<>(body, headers, status);
     }
 
 }

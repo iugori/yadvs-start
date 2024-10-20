@@ -55,16 +55,18 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
 
         // pagination
         var typedQuery = entityManager.createQuery(query);
+        var partialResult = 0;
         if (qc.offset() != null && qc.offset() > 0) {
             typedQuery.setFirstResult(qc.offset());
+            partialResult++;
         }
         if (qc.limit() != null && qc.limit() > 0) {
             typedQuery.setMaxResults(qc.limit());
+            partialResult++;
         }
 
         Long totalCount = null;
-        // counting total - no need to run the counter query if pagination is not applied
-        if (countTotal && qc.offset() != null && qc.limit() != null) {
+        if (countTotal && partialResult > 0) {
             var countQuery = cb.createQuery(Long.class);
             var countEntity = countQuery.from(PollEntity.class);
             var countDelegate = new CriteriaBuilderDelegate(callCtx, cb, countQuery, countEntity);

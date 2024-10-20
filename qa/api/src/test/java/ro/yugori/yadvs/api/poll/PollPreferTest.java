@@ -5,10 +5,10 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.MimeType;
 import ro.yugori.yadvs.api.MoreHttpHeaders;
+import ro.yugori.yadvs.api.RestApi;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class PollPreferTest extends PollBaseTest {
 
@@ -18,13 +18,14 @@ public class PollPreferTest extends PollBaseTest {
         var rr = given().
                 when()
                 .contentType(MimeType.Application.JSON)
-                .header(MoreHttpHeaders.PREFER, MoreHttpHeaders.Values.RETURN_MINIMAL)
+                .header(RestApi.Header.PREFER, RestApi.Header.Value.RETURN_MINIMAL)
                 .body(poll)
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_NO_CONTENT)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .header(HttpHeaders.LOCATION, containsString(POLLS_URI))
-                .header(MoreHttpHeaders.PREFERENCE_APPLIED, is(MoreHttpHeaders.Values.RETURN_MINIMAL));
+                .header(RestApi.Header.PREFERENCE_APPLIED, is(RestApi.Header.Value.RETURN_MINIMAL));
         registerPollIdForDeletion(parsePollId(rr.extract().header(HttpHeaders.LOCATION)));
     }
 
@@ -34,13 +35,14 @@ public class PollPreferTest extends PollBaseTest {
         var rr = given().
                 when()
                 .contentType(MimeType.Application.JSON)
-                .header(MoreHttpHeaders.PREFER, MoreHttpHeaders.Values.RETURN_REPRESENTATION)
+                .header(RestApi.Header.PREFER, RestApi.Header.Value.RETURN_REPRESENTATION)
                 .body(poll)
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_CREATED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .header(HttpHeaders.LOCATION, containsString(POLLS_URI))
-                .header(MoreHttpHeaders.PREFERENCE_APPLIED, is(MoreHttpHeaders.Values.RETURN_REPRESENTATION));
+                .header(RestApi.Header.PREFERENCE_APPLIED, is(RestApi.Header.Value.RETURN_REPRESENTATION));
         registerPollIdForDeletion(parsePollId(rr.extract().header(HttpHeaders.LOCATION)));
     }
 

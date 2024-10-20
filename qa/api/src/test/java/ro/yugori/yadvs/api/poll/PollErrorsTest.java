@@ -4,7 +4,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.MimeType;
-import ro.yugori.yadvs.api.RestRequests;
+import ro.yugori.yadvs.api.RestApi;
 import ro.yugori.yadvs.api.dto.Poll;
 
 import static io.restassured.RestAssured.given;
@@ -13,14 +13,55 @@ import static org.hamcrest.Matchers.*;
 public class PollErrorsTest extends PollBaseTest {
 
     @Test
-    void getParseError() {
+    void getProjectionError() {
         given().
                 when()
-                .param(RestRequests.Params.FIELDS, "a+b")
+                .param(RestApi.Param.FIELDS, "a+b")
                 .get(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3210: projection_criteria"))
                 .body("_embedded.errors[0].message", is("Cannot use projection field `a+b' (must be a valid Java identifier)."));
+    }
+
+    @Test
+    void getPaginationPageNoError() {
+        given().
+                when()
+                .param(RestApi.Param.PAGE_NO, 0)
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3240: pagination_criteria"))
+                .body("_embedded.errors[0].message", is("Must be greater than or equal to 1."));
+    }
+
+    @Test
+    void getPaginationPageSizeError() {
+        given().
+                when()
+                .param(RestApi.Param.PAGE_SIZE, 0)
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3240: pagination_criteria"))
+                .body("_embedded.errors[0].message", is("Must be greater than or equal to 1."));
+    }
+
+    @Test
+    void getPaginationPageNoWithoutPageSizeError() {
+        given().
+                when()
+                .param(RestApi.Param.PAGE_NO, 1)
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3240: pagination_criteria"))
+                .body("_embedded.errors[0].message", is("Cannot have `~pageNo' without `~pageSize'."));
     }
 
     @Test
@@ -32,8 +73,9 @@ public class PollErrorsTest extends PollBaseTest {
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(4))
-                .body("logRef", notNullValue());
+                .body("logref", notNullValue());
     }
 
     @Test
@@ -47,6 +89,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .post(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
@@ -68,6 +111,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .put(poll2Uri).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
@@ -90,6 +134,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .patch(poll2Uri).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
@@ -100,19 +145,23 @@ public class PollErrorsTest extends PollBaseTest {
                 when()
                 .put(POLLS_URI).
                 then()
-                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("status", is(405));
 
         given().
                 when()
                 .patch(POLLS_URI).
                 then()
-                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
         given().
                 when()
                 .delete(POLLS_URI).
                 then()
-                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
     }
 
 }

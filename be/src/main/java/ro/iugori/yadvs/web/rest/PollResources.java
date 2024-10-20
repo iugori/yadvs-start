@@ -113,10 +113,19 @@ public class PollResources {
             }
         }
 
-        var records = pollService.findAndCount(restCtx, qcBuilder.build());
+        var qc = qcBuilder.build();
+        var records = pollService.findAndCount(restCtx, qc);
 
         var headers = new LinkedMultiValueMap<String, String>();
-        headers.put(RestApi.Header.X_TOTAL_COUNT, List.of(String.valueOf(records.getSecond())));
+        var recordCount = records.getSecond();
+        headers.put(RestApi.Header.X_TOTAL_COUNT, List.of(String.valueOf(recordCount)));
+        if (qc.limit() != null) {
+            var pageCount = recordCount / qc.limit();
+            if (recordCount % qc.limit() > 0) {
+                pageCount++;
+            }
+            headers.put(RestApi.Header.X_TOTAL_PAGES, List.of(String.valueOf(pageCount)));
+        }
 
         if (records.getFirst().isEmpty()) {
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
