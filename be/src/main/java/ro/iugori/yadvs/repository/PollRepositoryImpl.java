@@ -78,7 +78,7 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
         var result = typedQuery.getResultList();
         if (qc.isProjection()) {
             var mapper = ArrayToBeanMapper.of(PollEntity.class, qc.projectionFilter());
-            result = result.stream().map(a -> mapper.map((Object[]) a)).collect(Collectors.toList());
+            result = result.stream().map(mapper::map).collect(Collectors.toList());
         }
         if (totalCount == null) {
             totalCount = (long) result.size();

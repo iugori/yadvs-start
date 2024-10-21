@@ -26,7 +26,7 @@ public class PollEntity {
     private PollStatus status;
 
     @Column(name = "multi_option")
-    private boolean multiOption;
+    private Boolean multiOption;
 
     @Column(name = "start_utc")
     private LocalDateTime start;

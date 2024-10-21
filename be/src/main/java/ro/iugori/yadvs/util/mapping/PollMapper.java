@@ -46,7 +46,7 @@ public class PollMapper {
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
         dto.setStatus(entity.getStatus());
-        dto.setMultiOption(entity.isMultiOption());
+        dto.setMultiOption(entity.getMultiOption());
         dto.setStart(entity.getStart());
         dto.setEnd(entity.getEnd());
         return dto;

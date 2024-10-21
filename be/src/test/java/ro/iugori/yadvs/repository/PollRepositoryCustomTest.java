@@ -54,7 +54,7 @@ class PollRepositoryCustomTest {
         assertNull(poll.getId());
         assertNotNull(poll.getName());
         assertNotNull(poll.getDescription());
-        assertFalse(poll.isMultiOption());
+        assertNull(poll.getMultiOption());
         assertNull(poll.getStatus());
         assertNull(poll.getStart());
         assertNull(poll.getEnd());
@@ -81,7 +81,7 @@ class PollRepositoryCustomTest {
         var qc = QueryCriteria.builder().where("multiOption~is", true).build();
         var selection = customRepository.findByCriteria(testCtx, qc);
         assertEquals(14, selection.size());
-        assertTrue(selection.get(0).isMultiOption());
+        assertTrue(selection.get(0).getMultiOption());
     }
 
     @Test

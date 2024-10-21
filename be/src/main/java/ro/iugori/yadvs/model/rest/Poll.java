@@ -1,5 +1,6 @@
 package ro.iugori.yadvs.model.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @XFieldComparison(field1 = "start", rel = "lt", field2 = "end")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Poll extends RepresentationModel<Poll> {
 
     private Long id;

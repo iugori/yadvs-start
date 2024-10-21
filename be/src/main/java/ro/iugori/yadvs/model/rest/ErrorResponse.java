@@ -1,5 +1,6 @@
 package ro.iugori.yadvs.model.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +13,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse extends RepresentationModel<ErrorResponse> {
 
     @Getter
     @Setter
+    private String type; // RFC 9457
+
+    @Getter
+    @Setter
     private int status; // RFC 9457
+
+    @Getter
+    @Setter
+    private String title; // RFC 9457
+
+    @Getter
+    @Setter
+    private String detail; // RFC 9457
+
+    @Getter
+    @Setter
+    private String instance; // RFC 9457
 
     @Getter
     private final String path;

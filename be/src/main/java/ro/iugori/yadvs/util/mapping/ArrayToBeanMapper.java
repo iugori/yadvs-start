@@ -26,13 +26,17 @@ public class ArrayToBeanMapper<B> {
     }
 
     @SneakyThrows
-    public B map(Object[] array) {
+    public B map(Object obj) {
         var bean = beanClazz.getConstructor().newInstance();
-        for (int i = 0; i < beanFields.length; ++i) {
-            var field = beanFields[i];
-            if (field != null) {
-                field.set(bean, array[i]);
+        if (obj instanceof Object[] array) {
+            for (int i = 0; i < beanFields.length; ++i) {
+                var field = beanFields[i];
+                if (field != null) {
+                    field.set(bean, array[i]);
+                }
             }
+        } else if (beanFields.length == 1) {
+            beanFields[0].set(bean, obj);
         }
         return bean;
     }
