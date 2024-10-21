@@ -35,7 +35,8 @@ public class PollResources {
     }
 
     @PostMapping
-    public ResponseEntity<?> postPoll(@Parameter(hidden = true) RestContext restCtx, @Check @RequestBody Poll poll) {
+    public ResponseEntity<?> postPoll(@Parameter(hidden = true) RestContext restCtx
+            , @Check @RequestBody Poll poll) {
         var prefer = StringUtils.trimToEmpty(restCtx.getRequest().getHeader(RestApi.Header.PREFER));
         var entity = pollService.create(restCtx, poll);
         var headers = new LinkedMultiValueMap<String, String>();
@@ -51,7 +52,9 @@ public class PollResources {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @Check @RequestBody Poll poll) {
+    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id
+            , @Check @RequestBody Poll poll) {
         poll.setId(id);
         var optPoll = pollService.put(restCtx, poll);
         return optPoll.isEmpty()
@@ -60,7 +63,9 @@ public class PollResources {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @RequestBody Poll poll)
+    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id
+            , @RequestBody Poll poll)
             throws HttpMediaTypeNotSupportedException {
         var contentType = restCtx.getRequest().getHeader(HttpHeaders.CONTENT_TYPE);
         if (StringUtils.isNotEmpty(contentType)
@@ -76,7 +81,8 @@ public class PollResources {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id) {
+    public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
         var delResult = pollService.delete(restCtx, id);
         if (Boolean.TRUE.equals(delResult)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
