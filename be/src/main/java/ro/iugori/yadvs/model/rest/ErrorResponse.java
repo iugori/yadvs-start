@@ -16,21 +16,22 @@ public class ErrorResponse extends RepresentationModel<ErrorResponse> {
 
     @Getter
     @Setter
-    private int status;
+    private int status; // RFC 9457
 
     @Getter
     private final String path;
 
-    private final String timeRef;
+    @Getter
+    private final String timestamp;
 
     private final String logRef;
 
     private final List<ErrorModel> errors = new ArrayList<>();
 
 
-    public ErrorResponse(String logRef, LocalDateTime timeRef, String path) {
+    public ErrorResponse(String logRef, LocalDateTime timestamp, String path) {
         this.logRef = logRef;
-        this.timeRef = TimeUtil.toIsoDefaultZoneTs(timeRef);
+        this.timestamp = TimeUtil.toIsoDefaultZoneTs(timestamp);
         this.path = path;
     }
 
@@ -44,11 +45,6 @@ public class ErrorResponse extends RepresentationModel<ErrorResponse> {
 
     public boolean hasNoErrors() {
         return errors.isEmpty();
-    }
-
-    @JsonProperty("timeref")
-    public String getTimeRef() {
-        return timeRef;
     }
 
     @JsonProperty("logref")

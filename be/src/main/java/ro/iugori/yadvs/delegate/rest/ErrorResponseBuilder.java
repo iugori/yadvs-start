@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class ErrorResponseBuilder {
 
-    private static ErrorResponse errorsOf(CallContext callCtx) {
+    private static ErrorResponse of(CallContext callCtx) {
         var path = "N/A";
         if (callCtx instanceof RestContext restCtx && restCtx.getRequest() != null) {
             path = restCtx.getRequest().getRequestURI();
@@ -26,23 +26,23 @@ public class ErrorResponseBuilder {
         return new ErrorResponse(callCtx.getLogRef(), callCtx.getTimeRef(), path);
     }
 
-    private static ErrorResponse errorsOf(CallContext callCtx, Exception e) {
+    private static ErrorResponse of(CallContext callCtx, Exception e) {
         var error = new ErrorModel();
-        error.setCode(toErrorCode(e));
+        error.setCode(errorCodeOf(e));
         error.setMessage(e.getMessage());
-        var errors = errorsOf(callCtx);
+        var errors = of(callCtx);
         errors.add(error);
         return errors;
     }
 
-    public static ErrorResponse errorsOf(YadvsRestException e) {
-        var errors = errorsOf(e.getCallCtx());
+    public static ErrorResponse of(YadvsRestException e) {
+        var errors = of(e.getCallCtx());
 
         if (e.getCause() instanceof CheckException ex) {
             var cex = ex.getCause();
             if (cex != null) {
                 var error = new ErrorModel();
-                error.setCode(toErrorCode(cex));
+                error.setCode(errorCodeOf(cex));
                 error.setMessage(cex.getMessage());
                 errors.add(error);
             } else {
@@ -56,7 +56,7 @@ public class ErrorResponseBuilder {
 
         if (errors.hasNoErrors()) {
             var error = new ErrorModel();
-            error.setCode(toErrorCode(e));
+            error.setCode(errorCodeOf(e));
             error.setMessage(e.getMessage());
             errors.add(error);
         }
@@ -64,8 +64,8 @@ public class ErrorResponseBuilder {
         return errors;
     }
 
-    public static ErrorResponse errorsOf(RestContext restCtx, Exception e, TargetType targetType, String targetName) {
-        var errors = errorsOf(restCtx, e);
+    public static ErrorResponse of(RestContext restCtx, Exception e, TargetType targetType, String targetName) {
+        var errors = of(restCtx, e);
         var error = errors.getError(0);
         if (error.getLinks().isEmpty()) {
             error.add(Link.of(getSwaggerUrl(restCtx.getRequest()), "swagger"));
@@ -74,25 +74,25 @@ public class ErrorResponseBuilder {
         return errors;
     }
 
-    public static <T> ErrorResponse errorsOf(RestContext restCtx, Set<ConstraintViolation<T>> validationResult) {
-        var errors = errorsOf(restCtx);
+    public static <T> ErrorResponse of(RestContext restCtx, Set<ConstraintViolation<T>> validationResult) {
+        var errors = of(restCtx);
         validationResult.forEach(constraint -> {
-            var error = errorOf(constraint);
+            var error = errorModelOf(constraint);
             error.add(Link.of(getSwaggerUrl(restCtx.getRequest()), "swagger"));
             errors.add(error);
         });
         return errors;
     }
 
-    public static <T> ErrorModel errorOf(ConstraintViolation<T> constraint) {
+    public static <T> ErrorModel errorModelOf(ConstraintViolation<T> constraint) {
         var error = new ErrorModel();
-        error.setCode(toErrorCode(constraint.getConstraintDescriptor()));
+        error.setCode(errorCodeOf(constraint.getConstraintDescriptor()));
         error.setMessage(constraint.getMessage());
         error.setTarget(TargetType.FIELD, String.valueOf(constraint.getPropertyPath()));
         return error;
     }
 
-    private static ErrorCode toErrorCode(ConstraintDescriptor<?> descriptor) {
+    private static ErrorCode errorCodeOf(ConstraintDescriptor<?> descriptor) {
         var nameHint = descriptor.getAnnotation().annotationType().getSimpleName();
         return switch (nameHint) {
             case "NotNull" -> ErrorCode.NOT_NULL;
@@ -101,7 +101,7 @@ public class ErrorResponseBuilder {
         };
     }
 
-    private static ErrorCode toErrorCode(Throwable ex) {
+    private static ErrorCode errorCodeOf(Throwable ex) {
         return switch (ex) {
             case NumberFormatException ignored -> ErrorCode.TYPE_CONVERSION;
             case HttpRequestMethodNotSupportedException ignored -> ErrorCode.API_ERROR;

@@ -72,7 +72,7 @@ public class PollService {
             dto = PollMapper.dtoFrom(entity);
             var validationResult = validator.validate(dto);
             if (!validationResult.isEmpty()) {
-                var errors = validationResult.stream().map(ErrorResponseBuilder::errorOf).toArray(ErrorModel[]::new);
+                var errors = validationResult.stream().map(ErrorResponseBuilder::errorModelOf).toArray(ErrorModel[]::new);
                 throw new CheckException(errors);
             }
         }

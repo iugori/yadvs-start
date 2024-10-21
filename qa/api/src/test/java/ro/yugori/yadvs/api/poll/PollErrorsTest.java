@@ -26,6 +26,32 @@ public class PollErrorsTest extends PollBaseTest {
     }
 
     @Test
+    void getSelectionError() {
+        given().
+                when()
+                .param("name~x", "a")
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3220: selection_criteria"))
+                .body("_embedded.errors[0].message", is("Cannot parse selection predicate operator `x'."));
+    }
+
+    @Test
+    void getSortingError() {
+        given().
+                when()
+                .param(RestApi.Param.SORT, "a, +!a")
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("3230: sorting_criteria"))
+                .body("_embedded.errors[0].message", is("Cannot parse sort field `!a' (must be a valid Java identifier)."));
+    }
+
+    @Test
     void getPaginationPageNoError() {
         given().
                 when()

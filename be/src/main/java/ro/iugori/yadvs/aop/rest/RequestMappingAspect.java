@@ -5,14 +5,13 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
+import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
 import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.error.YadvsRestException;
-import ro.iugori.yadvs.web.RestApi;
 
 @Aspect
 @Component
@@ -38,27 +37,16 @@ public class RequestMappingAspect {
                 if (annotation instanceof Check) {
                     var validationResult = validator.validate(args[i]);
                     if (!validationResult.isEmpty()) {
-                        var restCtx = getRestContext(args);
-                        var headers = new HttpHeaders();
-                        headers.add(RestApi.Header.X_CORRELATION_ID, restCtx.getLogRef());
-                        var errors = ErrorResponseBuilder.errorsOf(restCtx, validationResult);
-                        return new ResponseEntity<>(errors, headers, HttpStatus.BAD_REQUEST);
+                        var errors = ErrorResponseBuilder.of(getRestContext(args), validationResult);
+                        return ResponseEntityBuilder.of(errors, HttpStatus.BAD_REQUEST);
                     }
                     break;
                 }
             }
         }
         try {
-            var r = joinPoint.proceed(args);
-            if (r instanceof ResponseEntity<?> rr) {
-                if (!rr.getHeaders().containsKey(RestApi.Header.X_CORRELATION_ID)) {
-                    var headers = new HttpHeaders();
-                    headers.addAll(rr.getHeaders());
-                    headers.add(RestApi.Header.X_CORRELATION_ID, getRestContext(args).getLogRef());
-                    r = new ResponseEntity<>(rr.getBody(), headers, rr.getStatusCode());
-                }
-            }
-            return r;
+            var entity = (ResponseEntity<?>) joinPoint.proceed(args);
+            return ResponseEntityBuilder.withXCorrelationID(entity, getRestContext(args).getLogRef());
         } catch (Exception e) {
             if (e instanceof YadvsRestException) {
                 throw e;
