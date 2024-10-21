@@ -33,6 +33,50 @@ public class PollLookupTest extends PollBaseTest {
     }
 
     @Test
+    void getProjection1() {
+        var rr = given().
+                when()
+                .param(RestApi.Param.FIELDS, "id")
+                .param(RestApi.Param.PAGE_SIZE, 1)
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
+        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        assertThat(polls.length()).isEqualTo(1);
+        var poll = polls.getJSONObject(0);
+        assertThat(poll.has("id")).isTrue();
+        assertThat(poll.has("name")).isFalse();
+        assertThat(poll.has("description")).isFalse();
+        assertThat(poll.has("status")).isFalse();
+        assertThat(poll.has("multiOption")).isFalse();
+        assertThat(poll.has("start")).isFalse();
+        assertThat(poll.has("end")).isFalse();
+    }
+
+    @Test
+    void getProjectionN() {
+        var rr = given().
+                when()
+                .param(RestApi.Param.FIELDS, "id,name")
+                .param(RestApi.Param.PAGE_SIZE, 1)
+                .get(POLLS_URI).
+                then()
+                .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
+        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        assertThat(polls.length()).isEqualTo(1);
+        var poll = polls.getJSONObject(0);
+        assertThat(poll.has("id")).isTrue();
+        assertThat(poll.has("name")).isTrue();
+        assertThat(poll.has("description")).isFalse();
+        assertThat(poll.has("status")).isFalse();
+        assertThat(poll.has("multiOption")).isFalse();
+        assertThat(poll.has("start")).isFalse();
+        assertThat(poll.has("end")).isFalse();
+    }
+
+    @Test
     void getPage_1_7() {
         var rr = given().
                 when()
