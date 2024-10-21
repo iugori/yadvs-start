@@ -59,7 +59,7 @@ public class PollCrudTest extends PollBaseTest {
 
         rr = given().
                 when()
-                .contentType(MimeType.Application.JSON)
+                .contentType(MimeType.Application.MERGE_PATCH_JSON)
                 .body(pollPatch)
                 .patch(pollUri).
                 then()

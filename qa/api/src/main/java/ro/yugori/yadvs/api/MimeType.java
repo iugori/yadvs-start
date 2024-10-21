@@ -54,6 +54,16 @@ public class MimeType {
         public static final String JSON = PREFIX + "json";
 
         /**
+         * application/json-patch+json
+         */
+        public static final String JSON_PATCH_JSON = PREFIX + "json-patch+json";
+
+        /**
+         * application/merge-patch+json
+         */
+        public static final String MERGE_PATCH_JSON = PREFIX + "merge-patch+json";
+
+        /**
          * application/ld+json
          */
         public static final String LD_JSON = PREFIX + "ld+json";

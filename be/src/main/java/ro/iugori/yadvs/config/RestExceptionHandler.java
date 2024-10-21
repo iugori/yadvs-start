@@ -3,6 +3,7 @@ package ro.iugori.yadvs.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,24 +16,27 @@ import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.YadvsRestException;
 
+import java.util.Objects;
+
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler {
 
     @ExceptionHandler(YadvsRestException.class)
-    public ResponseEntity<?> handleYadvsRestException(YadvsRestException ye) {
-        var callCtx = ye.getCallCtx();
+    public ResponseEntity<?> handleYadvsRestException(YadvsRestException ex) {
+        var exCause = ex.getCause();
+        var callCtx = ex.getCallCtx();
 
-        var errorResponse = ErrorResponseBuilder.of(ye);
+        logException(callCtx, Objects.requireNonNullElse(exCause, ex));
 
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        if (ye.getCause() instanceof CheckException ce) {
-            logException(callCtx, ce);
+        if (exCause instanceof CheckException) {
             httpStatus = HttpStatus.BAD_REQUEST;
-        } else {
-            logException(callCtx, ye);
+        } else if (exCause instanceof HttpMediaTypeNotSupportedException) {
+            httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
         }
 
+        var errorResponse = ErrorResponseBuilder.of(ex);
         return ResponseEntityBuilder.of(errorResponse, httpStatus);
     }
 
@@ -59,9 +63,8 @@ public class RestExceptionHandler {
         return ResponseEntityBuilder.of(errorResponse, httpStatus);
     }
 
-    private static void logException(CallContext callCtx, Exception e) {
+    private static void logException(CallContext callCtx, Throwable e) {
         callCtx.getLogger().error(callCtx.getLogRef(), e);
     }
-
 
 }

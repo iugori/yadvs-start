@@ -117,6 +117,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].code", is("2102: resource_conflict"))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
 
@@ -139,7 +140,25 @@ public class PollErrorsTest extends PollBaseTest {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].code", is("2102: resource_conflict"))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
+    }
+
+    @Test
+    void patchJsonPatchJson() {
+        var poll = nextPoll();
+        var pollUri = createPoll(poll).extract().header(HttpHeaders.LOCATION);
+        given().
+                when()
+                .contentType(MimeType.Application.JSON_PATCH_JSON)
+                .body(poll)
+                .patch(pollUri).
+                then()
+                .statusCode(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].code", is("1010: api_error"))
+                .body("_embedded.errors[0].message", is("Unsupported patch type `application/json-patch+json'"));
     }
 
     @Test
@@ -162,6 +181,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
+                .body("_embedded.errors[0].code", is("2102: resource_conflict"))
                 .body("_embedded.errors[0].message", is("Poll.name must be unique"));
     }
 

@@ -6,6 +6,7 @@ import jakarta.validation.metadata.ConstraintDescriptor;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.Link;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.model.ctx.CallContext;
@@ -35,29 +36,23 @@ public class ErrorResponseBuilder {
         return errors;
     }
 
-    public static ErrorResponse of(YadvsRestException e) {
-        var errors = of(e.getCallCtx());
+    public static ErrorResponse of(YadvsRestException yadvsEx) {
+        var exCause = yadvsEx.getCause();
 
-        if (e.getCause() instanceof CheckException ex) {
-            var cex = ex.getCause();
-            if (cex != null) {
-                var error = new ErrorModel();
-                error.setCode(errorCodeOf(cex));
-                error.setMessage(cex.getMessage());
-                errors.add(error);
-            } else {
-                for (var error : ex.getErrors()) {
-                    var errorClone = SerializationUtils.clone(error);
-                    errorClone.add(Link.of(getSwaggerUrl(((RestContext) e.getCallCtx()).getRequest()), "swagger"));
-                    errors.add(errorClone);
-                }
+        var errors = of(yadvsEx.getCallCtx());
+
+        if (exCause instanceof CheckException checkEx) {
+            var swaggerUrl = getSwaggerUrl(((RestContext) yadvsEx.getCallCtx()).getRequest());
+            for (var error : checkEx.getErrors()) {
+                var errorClone = SerializationUtils.clone(error);
+                errorClone.add(Link.of(swaggerUrl, "swagger"));
+                errors.add(errorClone);
             }
-        }
-
-        if (errors.hasNoErrors()) {
+        } else {
+            var ex = exCause == null ? yadvsEx : exCause;
             var error = new ErrorModel();
-            error.setCode(errorCodeOf(e));
-            error.setMessage(e.getMessage());
+            error.setCode(errorCodeOf(ex));
+            error.setMessage(ex.getMessage());
             errors.add(error);
         }
 
@@ -105,6 +100,7 @@ public class ErrorResponseBuilder {
         return switch (ex) {
             case NumberFormatException ignored -> ErrorCode.TYPE_CONVERSION;
             case HttpRequestMethodNotSupportedException ignored -> ErrorCode.API_ERROR;
+            case HttpMediaTypeNotSupportedException ignored -> ErrorCode.API_ERROR;
             case MethodArgumentTypeMismatchException ignored -> ErrorCode.TYPE_CONVERSION;
             default -> ErrorCode.GENERIC;
         };

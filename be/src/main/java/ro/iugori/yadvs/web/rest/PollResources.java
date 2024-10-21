@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
@@ -58,8 +59,15 @@ public class PollResources {
                 : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @RequestBody Poll poll) {
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx, @PathVariable("id") long id, @RequestBody Poll poll)
+            throws HttpMediaTypeNotSupportedException {
+        var contentType = restCtx.getRequest().getHeader(HttpHeaders.CONTENT_TYPE);
+        if (StringUtils.isNotEmpty(contentType)
+                && contentType.toLowerCase().contains(RestApi.MediaType.APPLICATION_JSON_PATCH_JSON.toString())) {
+            throw new HttpMediaTypeNotSupportedException(
+                    "Unsupported patch type `" + RestApi.MediaType.APPLICATION_JSON_PATCH_JSON + "'");
+        }
         poll.setId(id);
         var optPoll = pollService.patch(restCtx, poll);
         return optPoll.isEmpty()
