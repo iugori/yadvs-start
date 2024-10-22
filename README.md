@@ -25,6 +25,7 @@ A quick list of technical features used in back-end implemementation:
   - sorting
   - pagination
 - Unit testing 
+  - ArchUnit
   - @DataJpaTest
   - AssertJ
   - REST Assured with custom matchest

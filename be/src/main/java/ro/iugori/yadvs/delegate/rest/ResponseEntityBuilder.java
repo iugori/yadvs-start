@@ -4,7 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ro.iugori.yadvs.model.rest.ErrorResponse;
-import ro.iugori.yadvs.web.RestApi;
+import ro.iugori.yadvs.util.rest.RestApi;
 
 public class ResponseEntityBuilder {
 

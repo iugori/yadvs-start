@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.model.criteria;
 
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.TextUtil;
+import ro.iugori.yadvs.util.text.TextUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.ConversionUtil;
+import ro.iugori.yadvs.util.conversion.ConversionUtil;
 import ro.iugori.yadvs.util.reflection.ReflectionUtil;
 
 import java.math.BigDecimal;

@@ -9,7 +9,7 @@ import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
-import ro.iugori.yadvs.web.RestApi;
+import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.text.ParseException;
 import java.util.ArrayList;

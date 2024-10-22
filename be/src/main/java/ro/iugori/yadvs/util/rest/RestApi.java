@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.web;
+package ro.iugori.yadvs.util.rest;
 
 
 
