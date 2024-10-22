@@ -5,7 +5,7 @@ import ro.iugori.yadvs.model.criteria.ProjectionFilter;
 import ro.iugori.yadvs.model.criteria.SelectionFilter;
 import ro.iugori.yadvs.model.criteria.SortOrder;
 import ro.iugori.yadvs.model.ctx.CallContext;
-import ro.iugori.yadvs.util.ConversionUtil;
+import ro.iugori.yadvs.util.conversion.ConversionUtil;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.util.converter;
+package ro.iugori.yadvs.util.conversion;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;

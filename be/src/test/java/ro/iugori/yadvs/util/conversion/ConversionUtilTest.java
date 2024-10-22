@@ -1,6 +1,7 @@
-package ro.iugori.yadvs.util;
+package ro.iugori.yadvs.util.conversion;
 
 import org.junit.jupiter.api.Test;
+import ro.iugori.yadvs.util.conversion.ConversionUtil;
 
 import java.util.List;
 

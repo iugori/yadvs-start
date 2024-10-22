@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.TextUtil;
-import ro.iugori.yadvs.web.RestApi;
+import ro.iugori.yadvs.util.text.TextUtil;
+import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.text.ParseException;
 import java.util.ArrayList;

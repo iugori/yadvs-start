@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.util;
+package ro.iugori.yadvs.util.text;
 
 import java.util.regex.Pattern;
 

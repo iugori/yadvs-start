@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 import ro.iugori.yadvs.model.error.ErrorModel;
-import ro.iugori.yadvs.util.TimeUtil;
+import ro.iugori.yadvs.util.time.TimeUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
