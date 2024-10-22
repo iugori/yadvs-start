@@ -193,7 +193,7 @@ public class PollErrorsTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
-                .body("status", is(405));
+                .body("status", is(HttpStatus.SC_METHOD_NOT_ALLOWED));
 
         given().
                 when()

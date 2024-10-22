@@ -45,8 +45,11 @@ public class RequestMappingAspect {
             }
         }
         try {
-            var entity = (ResponseEntity<?>) joinPoint.proceed(args);
-            return ResponseEntityBuilder.withXCorrelationID(entity, getRestContext(args).getLogRef());
+            var response = joinPoint.proceed(args);
+            if (response instanceof ResponseEntity<?> entity) {
+                response = ResponseEntityBuilder.withXCorrelationID(entity, getRestContext(args).getLogRef());
+            }
+            return response;
         } catch (Exception e) {
             if (e instanceof YadvsRestException) {
                 throw e;

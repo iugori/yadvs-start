@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -13,6 +14,7 @@ import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
+import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.YadvsRestException;
 
@@ -30,10 +32,18 @@ public class RestExceptionHandler {
         logException(callCtx, Objects.requireNonNullElse(exCause, ex));
 
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        if (exCause instanceof CheckException) {
+        if (exCause instanceof CheckException checkException) {
             httpStatus = HttpStatus.BAD_REQUEST;
+            for (var error : checkException.getErrors()) {
+                if (error.codeAsInt() == ErrorCode.RESOURCE_CONFLICT.code) {
+                    httpStatus = HttpStatus.CONFLICT;
+                    break;
+                }
+            }
         } else if (exCause instanceof HttpMediaTypeNotSupportedException) {
             httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+        } else if (exCause instanceof NotImplementedException) {
+            httpStatus = HttpStatus.NOT_IMPLEMENTED;
         }
 
         var errorResponse = ErrorResponseBuilder.of(ex);

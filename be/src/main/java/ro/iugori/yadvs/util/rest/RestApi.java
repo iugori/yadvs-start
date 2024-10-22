@@ -12,6 +12,10 @@ public interface RestApi {
             String ID = "/polls";
             String ROOT = URI.ROOT + ID;
         }
+
+        interface Options {
+            String ID = "/options";
+        }
     }
 
     interface Header {
@@ -40,6 +44,7 @@ public interface RestApi {
     interface MediaType {
         org.springframework.http.MediaType APPLICATION_JSON_PATCH_JSON = new org.springframework.http.MediaType("application", "json-patch+json");
         org.springframework.http.MediaType APPLICATION_MERGE_PATCH_JSON = new org.springframework.http.MediaType("application", "merge-patch+json");
+        String APPLICATION_MERGE_PATCH_JSON_VALUE = "application/merge-patch+json";
     }
 
 }
