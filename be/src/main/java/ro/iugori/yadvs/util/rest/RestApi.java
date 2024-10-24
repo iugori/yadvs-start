@@ -20,13 +20,15 @@ public interface RestApi {
 
     interface Header {
 
+        String ACCEPT_LINKS = "Accept-Links";
         String PREFER = "Prefer";
         String PREFERENCE_APPLIED = "Preference-Applied";
+        String X_CORRELATION_ID = "X-Correlation-ID";
         String X_TOTAL_COUNT = "X-Total-Count";
         String X_TOTAL_PAGES = "X-Total-Pages";
-        String X_CORRELATION_ID = "X-Correlation-ID";
 
         interface Value {
+            String ACCEPT_LINKS_HATEOAS = "HATEOAS";
             String RETURN_MINIMAL = "return=minimal";
             String RETURN_REPRESENTATION = "return=representation";
         }

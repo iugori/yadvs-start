@@ -2,6 +2,7 @@ package ro.iugori.yadvs.web.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -123,21 +124,35 @@ public class PollResource {
         throw new NotImplementedException("Archiving via delete is not supported.");
     }
 
-    @Operation(summary = "Retrieve poll", tags = {"Poll"})
+    @Operation(summary = "Retrieve poll", tags = {"Poll"}, parameters = {
+            @Parameter(in = ParameterIn.HEADER,
+                    name = RestApi.Header.ACCEPT_LINKS,
+                    description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPoll(@PathVariable("id") long id) {
+    public ResponseEntity<?> getPoll(@PathVariable("id") long id
+            , @RequestHeader(name = RestApi.Header.ACCEPT_LINKS) Optional<String> acceptLinks) {
         var optPoll = pollService.findById(id);
         if (optPoll.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         var poll = PollMapper.dtoFrom(optPoll.get());
-        poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
+        acceptLinks.ifPresent(headerValue -> {
+            if (headerValue.toUpperCase().contains(RestApi.Header.Value.ACCEPT_LINKS_HATEOAS)) {
+                poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
+            }
+        });
         return new ResponseEntity<>(poll, HttpStatus.OK);
     }
 
-    @Operation(summary = "Retrieve a collection of polls", tags = {"Poll"})
+    @Operation(summary = "Retrieve a collection of polls", tags = {"Poll"}, parameters = {
+            @Parameter(in = ParameterIn.HEADER,
+                    name = RestApi.Header.ACCEPT_LINKS,
+                    description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
+    })
     @GetMapping
     public ResponseEntity<CollectionModel<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
+            , @RequestHeader(name = RestApi.Header.ACCEPT_LINKS) Optional<String> acceptLinks
             , @RequestParam(RestApi.Param.FIELDS) Optional<String> fields
             , @RequestParam(RestApi.Param.SORT) Optional<String> sorting
             , @RequestParam(RestApi.Param.PAGE_NO) Optional<String> pageNo
@@ -180,7 +195,11 @@ public class PollResource {
         var dtoList = records.getFirst().stream()
                 .map(entity -> {
                     var dto = PollMapper.dtoFrom(entity);
-                    dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
+                    acceptLinks.ifPresent(headerValue -> {
+                        if (headerValue.toUpperCase().contains(RestApi.Header.Value.ACCEPT_LINKS_HATEOAS)) {
+                            dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
+                        }
+                    });
                     return dto;
                 })
                 .collect(Collectors.toList());
