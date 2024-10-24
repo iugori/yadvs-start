@@ -114,7 +114,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll)
                 .post(POLLS_URI).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))
@@ -137,7 +137,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll2)
                 .put(poll2Uri).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))
@@ -158,7 +158,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("1010: api_error"))
-                .body("_embedded.errors[0].message", is("Unsupported patch type `application/json-patch+json'"));
+                .body("_embedded.errors[0].message", is("Content-Type 'application/json-patch+json;charset=ISO-8859-1' is not supported"));
     }
 
     @Test
@@ -178,7 +178,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll)
                 .patch(poll2Uri).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))

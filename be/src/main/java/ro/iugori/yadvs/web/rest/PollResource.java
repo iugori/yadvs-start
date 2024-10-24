@@ -11,10 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.delegate.rest.RequestChecker;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.RestContext;
 import ro.iugori.yadvs.model.rest.Poll;
@@ -74,9 +72,7 @@ public class PollResource {
     @PatchMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, RestApi.MediaType.APPLICATION_MERGE_PATCH_JSON_VALUE})
     public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
-            , @RequestBody Poll poll)
-            throws HttpMediaTypeNotSupportedException {
-        RequestChecker.checkPatchContentType(restCtx.getRequest());
+            , @RequestBody Poll poll) {
         poll.setId(id);
         poll.setStatus(null);
         var optPoll = pollService.patch(restCtx, poll);

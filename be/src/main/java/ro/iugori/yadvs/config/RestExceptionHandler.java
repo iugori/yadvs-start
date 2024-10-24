@@ -68,6 +68,8 @@ public class RestExceptionHandler {
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (e instanceof HttpRequestMethodNotSupportedException) {
             httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
+        } else if (e instanceof HttpMediaTypeNotSupportedException) {
+            httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
         }
 
         return ResponseEntityBuilder.of(errorResponse, httpStatus);
