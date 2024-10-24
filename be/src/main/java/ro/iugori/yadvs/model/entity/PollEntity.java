@@ -11,14 +11,17 @@ import java.time.LocalDateTime;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "name"), name = "poll")
 public class PollEntity {
 
+    public static final int NAME_LENGTH = 200;
+    public static final int DESCRIPTION_LENGTH = 2000;
+
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 200)
+    @Column(name = "name", nullable = false, length = NAME_LENGTH)
     private String name;
 
-    @Column(name = "description", nullable = false, length = 2000)
+    @Column(name = "description", nullable = false, length = DESCRIPTION_LENGTH)
     private String description;
 
     @Column(name = "status", nullable = false, length = 9)

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import ro.iugori.yadvs.model.domain.PollStatus;
+import ro.iugori.yadvs.model.entity.PollEntity;
 import ro.iugori.yadvs.util.validation.XFieldComparison;
 
 import java.time.LocalDateTime;
@@ -24,12 +25,12 @@ public class Poll extends RepresentationModel<Poll> {
 
     @NotNull
     @NotEmpty
-    @Size(max = 200)
+    @Size(max = PollEntity.NAME_LENGTH)
     private String name;
 
     @NotNull
     @NotEmpty
-    @Size(max = 2000)
+    @Size(max = PollEntity.DESCRIPTION_LENGTH)
     private String description;
 
     private PollStatus status;

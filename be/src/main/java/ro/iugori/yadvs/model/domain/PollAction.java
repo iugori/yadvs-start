@@ -2,10 +2,10 @@ package ro.iugori.yadvs.model.domain;
 
 public enum PollAction {
 
-    DRAFTED,
-    ACTIVATED,
-    DEACTIVATED,
-    CLOSED,
-    ARCHIVED,
+    DRAFT,
+    ACTIVATE,
+    DEACTIVATE,
+    CLOSE,
+    ARCHIVE,
 
 }

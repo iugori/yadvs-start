@@ -1,7 +1,6 @@
 package ro.iugori.yadvs.util.rest;
 
 
-
 public interface RestApi {
 
     interface URI {
@@ -11,10 +10,27 @@ public interface RestApi {
         interface Polls {
             String ID = "/polls";
             String ROOT = URI.ROOT + ID;
+
+            String ACTIVATE = "/activate";
+            String SUSPEND = "/suspend";
+            String CLOSE = "/close";
+            String ARCHIVE = "/archive";
         }
 
         interface Options {
             String ID = "/options";
+        }
+
+        interface Votes {
+            String ID = "/votes";
+            String ROOT = URI.ROOT + ID;
+        }
+
+        interface Reports {
+            String ID = "/reports";
+            String ROOT = URI.ROOT + ID;
+
+            String POLL = "/poll";
         }
     }
 

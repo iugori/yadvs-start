@@ -5,7 +5,11 @@ import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
-import ro.yugori.yadvs.api.*;
+import ro.yugori.yadvs.api.ApiTest;
+import ro.yugori.yadvs.api.MimeType;
+import ro.yugori.yadvs.api.RestApi;
+import ro.yugori.yadvs.api.Setup;
+import ro.yugori.yadvs.api.dto.Option;
 import ro.yugori.yadvs.api.dto.Poll;
 import ro.yugori.yadvs.api.model.PollStatus;
 
@@ -19,6 +23,7 @@ import static ro.yugori.yadvs.api.util.LocalDateTimeMatchers.sameAs;
 public class PollBaseTest extends ApiTest {
 
     public static final String POLLS_URI = Setup.ROOT_REST_URI + "/polls";
+    public static final String OPTIONS_PATH = "/options";
 
     protected static final Faker FAKER = new Faker();
 
@@ -32,6 +37,10 @@ public class PollBaseTest extends ApiTest {
         return String.format("%s/%d", POLLS_URI, pollId);
     }
 
+    public static String buildPollOptionsUri(long pollId) {
+        return String.format("%s%s", buildPollUri(pollId), OPTIONS_PATH);
+    }
+
     public static Poll nextPoll() {
         return Poll.builder()
                 .name(FAKER.name().title())
@@ -39,6 +48,13 @@ public class PollBaseTest extends ApiTest {
                 .multiOption(FAKER.bool().bool())
 //              .start(FAKER.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime())
 //              .end(FAKER.date().future(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime())
+                .build();
+    }
+
+    public static Option nextOption() {
+        return Option.builder()
+                .index((short) FAKER.number().numberBetween(0, 1000))
+                .description(FAKER.lorem().sentence(20))
                 .build();
     }
 

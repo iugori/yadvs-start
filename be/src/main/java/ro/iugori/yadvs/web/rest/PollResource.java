@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-@Tag(name = "Poll", description = "the polls management API")
+@Tag(name = "polls", description = "The polls management API")
 @RestController
 @RequestMapping(path = RestApi.URI.Polls.ROOT)
 public class PollResource {
@@ -38,7 +38,7 @@ public class PollResource {
         this.pollService = pollService;
     }
 
-    @Operation(summary = "Create poll", tags = {"Poll"})
+    @Operation(summary = "Create poll", tags = {"polls"})
     @PostMapping
     public ResponseEntity<?> postPoll(@Parameter(hidden = true) RestContext restCtx
             , @Check @RequestBody Poll poll) {
@@ -56,7 +56,7 @@ public class PollResource {
         return new ResponseEntity<>(PollMapper.dtoFrom(entity), headers, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Replace poll", description = "The `status' input field is ignored.", tags = {"Poll"})
+    @Operation(summary = "Replace poll", description = "The `status' input field is ignored.", tags = {"polls"})
     @PutMapping("/{id}")
     public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
@@ -69,7 +69,7 @@ public class PollResource {
                 : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update poll", description = "The `status' input field is ignored.", tags = {"Poll"})
+    @Operation(summary = "Update poll", description = "The `status' input field is ignored.", tags = {"polls"})
     @PatchMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, RestApi.MediaType.APPLICATION_MERGE_PATCH_JSON_VALUE})
     public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
@@ -82,35 +82,35 @@ public class PollResource {
                 : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Activate poll", description = "Transitions the poll to `ACTIVE' state.", tags = {"Poll"})
-    @PatchMapping(value = "/{id}/activate")
+    @Operation(summary = "Activate poll", description = "Transitions the poll to `ACTIVE' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ACTIVATE)
     public ResponseEntity<?> activatePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
         throw new NotImplementedException("Not implemented yet.");
     }
 
-    @Operation(summary = "Suspend poll", description = "Transitions the poll to `SUSPENDED' state.", tags = {"Poll"})
-    @PatchMapping(value = "/{id}/suspend")
+    @Operation(summary = "Suspend poll", description = "Transitions the poll to `SUSPENDED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.SUSPEND)
     public ResponseEntity<?> suspendPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
         throw new NotImplementedException("Not implemented yet.");
     }
 
-    @Operation(summary = "Close poll", description = "Transitions the poll to `CLOSED' state.", tags = {"Poll"})
-    @PatchMapping(value = "/{id}/close")
+    @Operation(summary = "Close poll", description = "Transitions the poll to `CLOSED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.CLOSE)
     public ResponseEntity<?> closePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
         throw new NotImplementedException("Not implemented yet.");
     }
 
-    @Operation(summary = "Archive poll", description = "Transitions the poll to `ARCHIVED' state.", tags = {"Poll"})
-    @PatchMapping(value = "/{id}/archive")
+    @Operation(summary = "Archive poll", description = "Transitions the poll to `ARCHIVED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ARCHIVE)
     public ResponseEntity<?> archivePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
         throw new NotImplementedException("Not implemented yet.");
     }
 
-    @Operation(summary = "Delete poll", tags = {"Poll"})
+    @Operation(summary = "Delete poll", tags = {"polls"})
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
@@ -124,7 +124,7 @@ public class PollResource {
         throw new NotImplementedException("Archiving via delete is not supported.");
     }
 
-    @Operation(summary = "Retrieve poll", tags = {"Poll"}, parameters = {
+    @Operation(summary = "Retrieve poll", tags = {"polls"}, parameters = {
             @Parameter(in = ParameterIn.HEADER,
                     name = RestApi.Header.ACCEPT_LINKS,
                     description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
@@ -145,7 +145,7 @@ public class PollResource {
         return new ResponseEntity<>(poll, HttpStatus.OK);
     }
 
-    @Operation(summary = "Retrieve a collection of polls", tags = {"Poll"}, parameters = {
+    @Operation(summary = "Retrieve a collection of polls", tags = {"polls"}, parameters = {
             @Parameter(in = ParameterIn.HEADER,
                     name = RestApi.Header.ACCEPT_LINKS,
                     description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")

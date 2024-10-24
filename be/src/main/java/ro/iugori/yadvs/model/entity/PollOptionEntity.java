@@ -8,6 +8,8 @@ import lombok.Data;
 @Table(name = "poll_option")
 public class PollOptionEntity {
 
+    public static final int DESCRIPTION_LENGTH = 2000;
+
     @Id
     @GeneratedValue
     private Long id;
@@ -19,7 +21,7 @@ public class PollOptionEntity {
     @Column(name = "position", nullable = false, precision = 2)
     private Short position;
 
-    @Column(name = "description", nullable = false, length = 2000)
+    @Column(name = "description", nullable = false, length = DESCRIPTION_LENGTH)
     private String description;
 
 }
