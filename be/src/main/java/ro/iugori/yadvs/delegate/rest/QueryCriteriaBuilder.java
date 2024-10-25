@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.delegate.rest;
 
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
-import ro.iugori.yadvs.model.rest.RestContext;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 public class QueryCriteriaBuilder {

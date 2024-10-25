@@ -5,13 +5,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.text.TextUtil;
+import ro.iugori.yadvs.util.criteria.SortOrderParser;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SortOrder implements Iterable<SortOrder.Field> {
 
@@ -32,30 +33,7 @@ public class SortOrder implements Iterable<SortOrder.Field> {
         private Direction direction;
 
         public static Field parse(String script) throws ParseException {
-            var name = StringUtils.trimToNull(script);
-            if (name == null) {
-                throw new ParseException("Cannot parse sort field from empty string.", 0);
-            }
-
-            var order = Direction.ASC;
-            if (name.startsWith("-")) {
-                order = Direction.DESC;
-                name = name.substring(1);
-            } else if (name.startsWith("+")) {
-                name = name.substring(1);
-            }
-
-            name = StringUtils.trimToNull(name);
-            if (name == null) {
-                throw new ParseException("Cannot parse sort field without name.", script.length() - 1);
-            }
-            if (!TextUtil.isValidIdentifier(name)) {
-                throw new ParseException(
-                        String.format("Cannot parse sort field `%s' (must be a valid Java identifier).", name),
-                        script.indexOf(name));
-            }
-
-            return new Field(name, order);
+            return SortOrderParser.parse(script);
         }
 
         @Override
@@ -89,6 +67,10 @@ public class SortOrder implements Iterable<SortOrder.Field> {
     @Override
     public Iterator<Field> iterator() {
         return fields.iterator();
+    }
+
+    public Stream<Field> stream() {
+        return fields.stream();
     }
 
     public SortOrder add(Field newField) {

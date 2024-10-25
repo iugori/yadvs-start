@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.rest.RestContext;
-import ro.iugori.yadvs.model.rest.Option;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
+import ro.iugori.yadvs.model.rest.shared.Option;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.util.List;

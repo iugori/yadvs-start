@@ -12,7 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
 import ro.iugori.yadvs.model.ctx.CallContext;
-import ro.iugori.yadvs.model.rest.RestContext;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.TargetType;

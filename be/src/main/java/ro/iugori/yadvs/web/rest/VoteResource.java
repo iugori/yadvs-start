@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.rest.Vote;
+import ro.iugori.yadvs.model.rest.shared.Vote;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 @Tag(name = "votes", description = "The vote casting API")

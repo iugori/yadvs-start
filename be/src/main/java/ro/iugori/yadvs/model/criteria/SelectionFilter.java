@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.text.TextUtil;
+import ro.iugori.yadvs.util.criteria.SelectionFilterParser;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.text.ParseException;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
 
@@ -57,42 +58,11 @@ public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
         private Object value;
 
         public static Predicate parse(String script) throws ParseException {
-            script = StringUtils.trimToEmpty(script);
-            var scriptValue = script.split("=", 2);
-            if (scriptValue.length != 2) {
-                throw new ParseException("Cannot parse selection predicate without name and value (`=' is missing).", 0);
-            }
-            return parse(scriptValue[0], scriptValue[1]);
+            return SelectionFilterParser.parse(script);
         }
 
         public static Predicate parse(String script, Object value) throws ParseException {
-            var name = StringUtils.trimToNull(script);
-            if (name == null) {
-                throw new ParseException("Cannot parse selection predicate without name.", 0);
-            }
-            if (value == null) {
-                throw new ParseException("Cannot parse selection predicate with null value.", 0);
-            }
-
-            var op = Operator.EQ;
-            var opStartIdx = name.lastIndexOf(RestApi.RESERVED_PARAM);
-            if (opStartIdx > 0) {
-                var opScript = name.substring(opStartIdx + 1);
-                op = Operator.parse(opScript);
-
-                name = StringUtils.trimToNull(name.substring(0, opStartIdx));
-                if (name == null) {
-                    throw new ParseException("Cannot parse selection predicate without name.", 0);
-                }
-            }
-
-            if (!TextUtil.isValidIdentifier(name)) {
-                throw new ParseException(
-                        String.format("Cannot parse selection predicate with field `%s' (must be a valid Java identifier).", name),
-                        0);
-            }
-
-            return new Predicate(name, op, value);
+            return SelectionFilterParser.parse(script, value);
         }
 
         @Override
@@ -111,6 +81,10 @@ public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
     @Override
     public Iterator<Predicate> iterator() {
         return predicates.iterator();
+    }
+
+    public Stream<Predicate> stream() {
+        return predicates.stream();
     }
 
     public SelectionFilter add(Predicate predicate) {

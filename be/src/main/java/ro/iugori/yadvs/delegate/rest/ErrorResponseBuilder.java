@@ -10,9 +10,9 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ro.iugori.yadvs.model.ctx.CallContext;
-import ro.iugori.yadvs.model.rest.RestContext;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.model.error.*;
-import ro.iugori.yadvs.model.rest.ErrorResponse;
+import ro.iugori.yadvs.model.rest.sturctured.ErrorResponse;
 
 import java.util.Optional;
 import java.util.Set;

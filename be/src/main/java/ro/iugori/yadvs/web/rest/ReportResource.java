@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.rest.PollReportSpec;
+import ro.iugori.yadvs.model.rest.shared.PollReportSpec;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 @Tag(name = "reporting", description = "The report generation API")

@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.model.rest;
+package ro.iugori.yadvs.model.rest.shared;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotEmpty;

@@ -10,8 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
-import ro.iugori.yadvs.model.rest.RestContext;
 import ro.iugori.yadvs.model.error.YadvsRestException;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Aspect
 @Component
@@ -23,6 +27,14 @@ public class RequestMappingAspect {
         this.validator = validator;
     }
 
+    private static RestContext getRestContext(Object[] args) {
+        return Arrays.stream(args)
+                .filter(RestContext.class::isInstance)
+                .map(RestContext.class::cast)
+                .findFirst()
+                .orElseGet(RestContext::fromRequestContextHolder);
+    }
+
     @Around("@annotation(org.springframework.web.bind.annotation.GetMapping) || " +
             "@annotation(org.springframework.web.bind.annotation.PatchMapping) || " +
             "@annotation(org.springframework.web.bind.annotation.PutMapping) || " +
@@ -30,46 +42,45 @@ public class RequestMappingAspect {
             "@annotation(org.springframework.web.bind.annotation.DeleteMapping) || " +
             "@annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public Object injectCallContext(ProceedingJoinPoint joinPoint) throws Throwable {
-        var args = joinPoint.getArgs();
-        var paramAnnotations = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterAnnotations();
-        for (var i = 0; i < args.length; ++i) {
-            for (var annotation : paramAnnotations[i]) {
-                if (annotation instanceof Check) {
-                    var validationResult = validator.validate(args[i]);
-                    if (!validationResult.isEmpty()) {
-                        var errors = ErrorResponseBuilder.of(getRestContext(args), validationResult);
-                        return ResponseEntityBuilder.of(errors, HttpStatus.BAD_REQUEST);
-                    }
-                    break;
-                }
-            }
+        var errorResponse = checkArgs(joinPoint);
+        if (errorResponse.isPresent()) {
+            return errorResponse.get();
         }
+        var args = joinPoint.getArgs();
         try {
-            var response = joinPoint.proceed(args);
-            if (response instanceof ResponseEntity<?> entity) {
-                response = ResponseEntityBuilder.withXCorrelationID(entity, getRestContext(args).getLogRef());
-            }
-            return response;
+            return patchResponse(joinPoint.proceed(args), args);
         } catch (Exception e) {
-            if (e instanceof YadvsRestException) {
-                throw e;
-            }
-            throw new YadvsRestException(getRestContext(args), e);
+            throw maybeWrapAsYadvsException(e, args);
         }
     }
 
-    private static RestContext getRestContext(Object[] args) {
-        RestContext restCtx = null;
-        for (var arg : args) {
-            if (arg instanceof RestContext) {
-                restCtx = (RestContext) arg;
-                break;
-            }
+    private Optional<ResponseEntity<?>> checkArgs(ProceedingJoinPoint joinPoint) {
+        var args = joinPoint.getArgs();
+        var paramAnnotations = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterAnnotations();
+
+        return IntStream.range(0, args.length)
+                .filter(i -> Arrays.stream(paramAnnotations[i]).anyMatch(Check.class::isInstance))
+                .mapToObj(i -> validator.validate(args[i]))
+                .filter(validationResult -> !validationResult.isEmpty())
+                .findFirst()
+                .map(validationResult -> {
+                    var errors = ErrorResponseBuilder.of(getRestContext(args), validationResult);
+                    return ResponseEntityBuilder.of(errors, HttpStatus.BAD_REQUEST);
+                });
+    }
+
+    private static Object patchResponse(Object response, Object[] args) {
+        if (response instanceof ResponseEntity<?> entity) {
+            return ResponseEntityBuilder.withXCorrelationID(entity, getRestContext(args).getLogRef());
         }
-        if (restCtx == null) {
-            restCtx = RestContext.fromRequestContextHolder();
+        return response;
+    }
+
+    private static YadvsRestException maybeWrapAsYadvsException(Exception ex, Object[] args) {
+        if (ex instanceof YadvsRestException yadvsException) {
+            return yadvsException;
         }
-        return restCtx;
+        return new YadvsRestException(getRestContext(args), ex);
     }
 
 }

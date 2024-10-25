@@ -7,10 +7,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import ro.iugori.yadvs.model.rest.RestContext;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
+
+import java.util.List;
 
 @Component
-public class RestContextArgumentResolver implements HandlerMethodArgumentResolver {
+public class RestContextConfigurerAndArgumentResolver implements WebMvcConfigurer, HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -23,6 +26,11 @@ public class RestContextArgumentResolver implements HandlerMethodArgumentResolve
             , @NonNull NativeWebRequest webRequest
             , WebDataBinderFactory binderFactory) {
         return RestContext.fromRequestContextHolder();
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(this);
     }
 
 }

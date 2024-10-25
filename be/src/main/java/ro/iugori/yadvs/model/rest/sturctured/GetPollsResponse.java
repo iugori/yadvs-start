@@ -1,7 +1,8 @@
-package ro.iugori.yadvs.model.rest;
+package ro.iugori.yadvs.model.rest.sturctured;
 
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
+import ro.iugori.yadvs.model.rest.shared.Poll;
 
 import java.util.List;
 

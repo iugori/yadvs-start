@@ -13,7 +13,7 @@ import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
-import ro.iugori.yadvs.model.rest.Poll;
+import ro.iugori.yadvs.model.rest.shared.Poll;
 import ro.iugori.yadvs.repository.PollRepository;
 import ro.iugori.yadvs.repository.PollRepositoryCustom;
 import ro.iugori.yadvs.util.mapping.PollMapper;

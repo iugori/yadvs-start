@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CriteriaBuilderDelegate {
 
@@ -136,16 +137,16 @@ public class CriteriaBuilderDelegate {
     }
 
     public void addOrderBy(SortOrder byFields) {
-        var columns = new ArrayList<Order>();
-        for (var field : byFields) {
-            var column = root.get(field.getName());
-            var order = field.getDirection() == SortOrder.Direction.DESC ? cb.desc(column) : cb.asc(column);
-            columns.add(order);
-        }
+        var columns = byFields.stream()
+                .map(field -> {
+                    var column = root.get(field.getName());
+                    return field.getDirection() == SortOrder.Direction.DESC ? cb.desc(column) : cb.asc(column);
+                })
+                .collect(Collectors.toList());
+
         if (!columns.isEmpty()) {
             query.orderBy(columns);
         }
     }
-
 
 }

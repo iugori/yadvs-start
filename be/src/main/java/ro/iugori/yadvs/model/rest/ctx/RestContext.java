@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.model.rest;
+package ro.iugori.yadvs.model.rest.ctx;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
