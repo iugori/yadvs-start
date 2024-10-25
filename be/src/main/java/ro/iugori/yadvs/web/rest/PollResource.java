@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,15 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.criteria.QueryCriteria;
-import ro.iugori.yadvs.model.ctx.RestContext;
+import ro.iugori.yadvs.delegate.rest.QueryCriteriaBuilder;
+import ro.iugori.yadvs.model.rest.GetPollsResponse;
 import ro.iugori.yadvs.model.rest.Poll;
+import ro.iugori.yadvs.model.rest.RestContext;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -130,18 +129,16 @@ public class PollResource {
                     description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPoll(@PathVariable("id") long id
-            , @RequestHeader(name = RestApi.Header.ACCEPT_LINKS) Optional<String> acceptLinks) {
+    public ResponseEntity<?> getPoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
         var optPoll = pollService.findById(id);
         if (optPoll.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         var poll = PollMapper.dtoFrom(optPoll.get());
-        acceptLinks.ifPresent(headerValue -> {
-            if (headerValue.toUpperCase().contains(RestApi.Header.Value.ACCEPT_LINKS_HATEOAS)) {
-                poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
-            }
-        });
+        if (restCtx.isFillHATEOASLinks()) {
+            poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
+        }
         return new ResponseEntity<>(poll, HttpStatus.OK);
     }
 
@@ -151,30 +148,8 @@ public class PollResource {
                     description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
     })
     @GetMapping
-    public ResponseEntity<CollectionModel<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
-            , @RequestHeader(name = RestApi.Header.ACCEPT_LINKS) Optional<String> acceptLinks
-            , @RequestParam(RestApi.Param.FIELDS) Optional<String> fields
-            , @RequestParam(RestApi.Param.SORT) Optional<String> sorting
-            , @RequestParam(RestApi.Param.PAGE_NO) Optional<String> pageNo
-            , @RequestParam(RestApi.Param.PAGE_SIZE) Optional<String> pageSize
-    ) {
-        var qcBuilder = QueryCriteria.builder()
-                .select(fields.orElse(null))
-                .orderBy(sorting.orElse(null))
-                .page(pageNo.orElse(null), pageSize.orElse(null));
-
-        var queryParams = restCtx.getRequest().getParameterMap();
-        for (var entry : queryParams.entrySet()) {
-            var key = entry.getKey();
-            if (!key.startsWith(RestApi.RESERVED_PARAM)) {
-                var value = entry.getValue();
-                if (value != null) {
-                    qcBuilder.where(key, value.length == 1 ? value[0] : value);
-                }
-            }
-        }
-
-        var qc = qcBuilder.build();
+    public ResponseEntity<GetPollsResponse> getPolls(@Parameter(hidden = true) RestContext restCtx) {
+        var qc = QueryCriteriaBuilder.of(restCtx);
         var records = pollService.findAndCount(restCtx, qc);
 
         var headers = new LinkedMultiValueMap<String, String>();
@@ -195,15 +170,13 @@ public class PollResource {
         var dtoList = records.getFirst().stream()
                 .map(entity -> {
                     var dto = PollMapper.dtoFrom(entity);
-                    acceptLinks.ifPresent(headerValue -> {
-                        if (headerValue.toUpperCase().contains(RestApi.Header.Value.ACCEPT_LINKS_HATEOAS)) {
-                            dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
-                        }
-                    });
+                    if (restCtx.isFillHATEOASLinks()) {
+                        dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(CollectionModel.of(dtoList), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new GetPollsResponse(dtoList), headers, HttpStatus.OK);
     }
 
 }

@@ -12,7 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
 import ro.iugori.yadvs.model.ctx.CallContext;
-import ro.iugori.yadvs.model.ctx.RestContext;
+import ro.iugori.yadvs.model.rest.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.TargetType;
@@ -52,7 +52,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        var callCtx = new RestContext();
+        var callCtx = RestContext.fromRequestContextHolder();
         logException(callCtx, e);
         var errorResponse = ErrorResponseBuilder.of(callCtx, e, TargetType.PARAMETER, e.getName());
         return ResponseEntityBuilder.of(errorResponse, HttpStatus.BAD_REQUEST);
@@ -60,7 +60,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAnyOtherException(Exception e) {
-        var callCtx = new RestContext();
+        var callCtx = RestContext.fromRequestContextHolder();
         logException(callCtx, e);
 
         var errorResponse = ErrorResponseBuilder.of(callCtx, e, TargetType.URI, callCtx.getRequest().getRequestURI());

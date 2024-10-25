@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.RestApi;
 
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
@@ -29,7 +30,7 @@ public class PollLookupTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_OK)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
-        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        var polls = bodyAsJSONObject(rr).getJSONArray("pollList");
         assertThat(polls.length()).isGreaterThanOrEqualTo(DUMMY_POLL_NO);
     }
 
@@ -43,7 +44,7 @@ public class PollLookupTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_OK)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
-        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        var polls = bodyAsJSONObject(rr).getJSONArray("pollList");
         assertThat(polls.length()).isEqualTo(1);
         var poll = polls.getJSONObject(0);
         assertThat(poll.has("id")).isTrue();
@@ -65,7 +66,7 @@ public class PollLookupTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_OK)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
-        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        var polls = bodyAsJSONObject(rr).getJSONArray("pollList");
         assertThat(polls.length()).isEqualTo(1);
         var poll = polls.getJSONObject(0);
         assertThat(poll.has("id")).isTrue();
@@ -98,7 +99,7 @@ public class PollLookupTest extends PollBaseTest {
                 .isGreaterThanOrEqualTo(xTotalCount / pageSize)
                 .isLessThanOrEqualTo(xTotalCount / pageSize + 1);
 
-        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        var polls = bodyAsJSONObject(rr).getJSONArray("pollList");
         assertThat(polls.length()).isLessThanOrEqualTo(pageSize);
     }
 
@@ -113,7 +114,7 @@ public class PollLookupTest extends PollBaseTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
         var xTotalCount = rr.extract().header(RestApi.Header.X_TOTAL_COUNT);
         assertThat(DUMMY_POLL_NO).isLessThanOrEqualTo(Integer.parseInt(xTotalCount));
-        var polls = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList");
+        var polls = bodyAsJSONObject(rr).getJSONArray("pollList");
         assertThat(polls.length()).isGreaterThanOrEqualTo(5);
     }
 
@@ -132,13 +133,13 @@ public class PollLookupTest extends PollBaseTest {
     void getHATEOASLinks() {
         given().
                 when()
-                .header(RestApi.Header.ACCEPT_LINKS, RestApi.Header.Value.ACCEPT_LINKS_HATEOAS)
+                .header(RestApi.Header.ACCEPT_LINKS, RestApi.Header.Value.ACCEPT_LINKS_HATEOAS.toLowerCase(Locale.ROOT))
                 .param(RestApi.Param.PAGE_SIZE, 1)
                 .get(POLLS_URI).
                 then()
                 .statusCode(HttpStatus.SC_OK)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
-                .body("_embedded.pollList[0]._links", notNullValue());
+                .body("pollList[0]._links", notNullValue());
 
         var rr = given().
                 when()
@@ -147,9 +148,9 @@ public class PollLookupTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_OK)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
-                .body("_embedded.pollList[0]._links", nullValue());
+                .body("pollList[0]._links", nullValue());
 
-        var pollId = bodyAsJSONObject(rr).getJSONObject("_embedded").getJSONArray("pollList").getJSONObject(0).getLong("id");
+        var pollId = bodyAsJSONObject(rr).getJSONArray("pollList").getJSONObject(0).getLong("id");
         var pollUri = buildPollUri(pollId);
 
         given().

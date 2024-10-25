@@ -53,6 +53,7 @@ public interface RestApi {
     String RESERVED_PARAM = "~";
 
     interface Param {
+        String REVISION = RESERVED_PARAM + "revision";
         String FIELDS = RESERVED_PARAM + "fields";
         String SORT = RESERVED_PARAM + "sort";
         String PAGE_NO = RESERVED_PARAM + "pageNo";
