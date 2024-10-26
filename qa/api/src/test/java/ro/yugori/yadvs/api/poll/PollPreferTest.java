@@ -1,14 +1,16 @@
 package ro.yugori.yadvs.api.poll;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import ro.yugori.yadvs.api.MimeType;
-import ro.yugori.yadvs.api.MoreHttpHeaders;
-import ro.yugori.yadvs.api.RestApi;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import ro.yugori.yadvs.api.MimeType;
+import ro.yugori.yadvs.api.RestApi;
 
 public class PollPreferTest extends PollBaseTest {
 

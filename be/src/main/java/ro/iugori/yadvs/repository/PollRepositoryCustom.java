@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface PollRepositoryCustom {
 
+    // TODO: investigate the opportunity to use entity graphs
     Pair<List<PollEntity>, Long> findByCriteriaAndCountTotal(CallContext callCtx, QueryCriteria qc);
 
     List<PollEntity> findByCriteria(CallContext callCtx, QueryCriteria qc);

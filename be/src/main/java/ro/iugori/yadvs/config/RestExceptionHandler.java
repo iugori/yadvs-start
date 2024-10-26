@@ -1,23 +1,29 @@
 package ro.iugori.yadvs.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.delegate.rest.ResponseEntityBuilder;
 import ro.iugori.yadvs.model.ctx.CallContext;
-import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.error.YadvsRestException;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -40,10 +46,26 @@ public class RestExceptionHandler {
                     break;
                 }
             }
+        } else if (exCause instanceof MethodArgumentNotValidException) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (exCause instanceof HttpMessageNotReadableException) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (exCause instanceof MissingServletRequestParameterException) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (exCause instanceof NoSuchElementException) {
+            httpStatus = HttpStatus.NOT_FOUND;
+        } else if (exCause instanceof NoHandlerFoundException) {
+            httpStatus = HttpStatus.NOT_FOUND;
+        } else if (exCause instanceof EntityNotFoundException) {
+            httpStatus = HttpStatus.NOT_FOUND;
         } else if (exCause instanceof HttpMediaTypeNotSupportedException) {
             httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
         } else if (exCause instanceof NotImplementedException) {
             httpStatus = HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (ex.getHttpStatus() != null) {
+            httpStatus = ex.getHttpStatus();
         }
 
         var errorResponse = ErrorResponseBuilder.of(ex);

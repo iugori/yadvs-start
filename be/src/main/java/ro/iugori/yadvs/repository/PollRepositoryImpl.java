@@ -46,7 +46,7 @@ public class PollRepositoryImpl implements PollRepositoryCustom {
         }
 
         // selection
-        var predicates = cbDelegate.addWhereClauses(qc.selectionFilter());
+        cbDelegate.addWhereClauses(qc.selectionFilter());
 
         // sorting
         if (qc.isSort()) {

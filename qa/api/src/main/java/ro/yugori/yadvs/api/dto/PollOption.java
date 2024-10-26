@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class Option {
+public class PollOption {
 
     private Long id;
     private Short index;

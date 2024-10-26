@@ -1,30 +1,30 @@
 package ro.iugori.yadvs.model.error;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import ro.iugori.yadvs.model.ctx.CallContext;
 
 public class YadvsRestException extends RuntimeException {
 
     @Getter
     private final CallContext callCtx;
+    @Getter
+    private final HttpStatus httpStatus;
 
-    public YadvsRestException(CallContext callCtx) {
-        this.callCtx = callCtx;
-    }
-
-    public YadvsRestException(CallContext callCtx, String message) {
+    public YadvsRestException(CallContext callCtx, String message, HttpStatus httpStatus) {
         super(message);
         this.callCtx = callCtx;
+        this.httpStatus = httpStatus;
     }
 
-    public YadvsRestException(CallContext callCtx, String message, Throwable cause) {
-        super(message, cause);
+    public YadvsRestException(CallContext callCtx, Throwable cause, HttpStatus httpStatus) {
+        super(cause);
         this.callCtx = callCtx;
+        this.httpStatus = httpStatus;
     }
 
     public YadvsRestException(CallContext callCtx, Throwable cause) {
-        super(cause);
-        this.callCtx = callCtx;
+        this(callCtx, cause, null);
     }
 
 }

@@ -13,6 +13,18 @@ import static org.hamcrest.Matchers.*;
 public class PollErrorsTest extends PollBaseTest {
 
     @Test
+    void getInvalidPollId() {
+        var pollUri = String.format("%s/%s", POLLS_URI, "un-parsable");
+        given().
+                when()
+                .get(pollUri).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("2101: type_conversion"));
+    }
+
+    @Test
     void getProjectionError() {
         given().
                 when()

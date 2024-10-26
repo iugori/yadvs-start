@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.config;
 
+import jakarta.annotation.Nonnull;
 import org.springframework.core.MethodParameter;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -21,9 +21,9 @@ public class RestContextConfigurerAndArgumentResolver implements WebMvcConfigure
     }
 
     @Override
-    public Object resolveArgument(@NonNull MethodParameter parameter
+    public Object resolveArgument(@Nonnull MethodParameter parameter
             , ModelAndViewContainer mavContainer
-            , @NonNull NativeWebRequest webRequest
+            , @Nonnull NativeWebRequest webRequest
             , WebDataBinderFactory binderFactory) {
         return RestContext.fromRequestContextHolder();
     }

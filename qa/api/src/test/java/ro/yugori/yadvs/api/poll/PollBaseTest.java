@@ -9,7 +9,7 @@ import ro.yugori.yadvs.api.ApiTest;
 import ro.yugori.yadvs.api.MimeType;
 import ro.yugori.yadvs.api.RestApi;
 import ro.yugori.yadvs.api.Setup;
-import ro.yugori.yadvs.api.dto.Option;
+import ro.yugori.yadvs.api.dto.PollOption;
 import ro.yugori.yadvs.api.dto.Poll;
 import ro.yugori.yadvs.api.model.PollStatus;
 
@@ -51,8 +51,8 @@ public class PollBaseTest extends ApiTest {
                 .build();
     }
 
-    public static Option nextOption() {
-        return Option.builder()
+    public static PollOption nextOption() {
+        return PollOption.builder()
                 .index((short) FAKER.number().numberBetween(0, 1000))
                 .description(FAKER.lorem().sentence(20))
                 .build();

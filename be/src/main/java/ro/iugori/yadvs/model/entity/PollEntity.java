@@ -5,6 +5,8 @@ import lombok.Data;
 import ro.iugori.yadvs.model.domain.PollStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,5 +38,8 @@ public class PollEntity {
 
     @Column(name = "end_utc")
     private LocalDateTime end;
+
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<PollOptionEntity> options = new ArrayList<>();
 
 }

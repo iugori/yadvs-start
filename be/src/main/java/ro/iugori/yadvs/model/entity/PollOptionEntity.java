@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "poll_option")
-public class PollOptionEntity {
+public class PollOptionEntity implements Comparable<PollOptionEntity>{
 
     public static final int DESCRIPTION_LENGTH = 2000;
 
@@ -23,5 +23,10 @@ public class PollOptionEntity {
 
     @Column(name = "description", nullable = false, length = DESCRIPTION_LENGTH)
     private String description;
+
+    @Override
+    public int compareTo(PollOptionEntity other) {
+        return Short.compare(this.position, other.position);
+    }
 
 }

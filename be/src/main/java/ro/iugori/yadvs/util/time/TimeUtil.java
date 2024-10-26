@@ -26,7 +26,7 @@ public class TimeUtil {
         return v.atZone(ZoneId.systemDefault());
     }
 
-    private static ZonedDateTime toUtcZone(LocalDateTime v) {
+    public static ZonedDateTime toUtcZone(LocalDateTime v) {
         return v.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
     }
 
