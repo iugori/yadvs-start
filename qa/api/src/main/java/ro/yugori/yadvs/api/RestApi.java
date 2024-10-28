@@ -5,6 +5,7 @@ public interface RestApi {
     interface URI {
 
         String ROOT = "/yadvs/rest/v1";
+        String WILDCARD = "-";
 
         interface Polls {
             String ID = "/polls";

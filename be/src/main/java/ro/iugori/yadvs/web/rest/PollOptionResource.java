@@ -7,12 +7,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
+import ro.iugori.yadvs.model.entity.PollOptionEntity;
+import ro.iugori.yadvs.model.error.CheckException;
+import ro.iugori.yadvs.model.error.ErrorModel;
+import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.model.rest.sturctured.PollOptionsResponse;
 import ro.iugori.yadvs.model.rest.sturctured.PutPollOptionsRequest;
 import ro.iugori.yadvs.service.PollOptionService;
 import ro.iugori.yadvs.util.mapping.PollOptionMapper;
 import ro.iugori.yadvs.util.rest.RestApi;
+
+import java.util.List;
 
 @Tag(name = "options", description = "The poll options management API")
 @RestController
@@ -41,12 +47,22 @@ public class PollOptionResource {
 
     @Operation(summary = "Get the poll options", tags = {"options"})
     @GetMapping
-    public ResponseEntity<PollOptionsResponse> getOptions(@PathVariable("id") long pollId) {
-        var options = pollOptionService.getOptions(pollId);
-        if (options.isEmpty()) {
+    public ResponseEntity<PollOptionsResponse> getOptions(@PathVariable("id") String pollIdHint) {
+        List<PollOptionEntity> optionEntities;
+        if (RestApi.URI.WILDCARD.equals(pollIdHint)) {
+            optionEntities = pollOptionService.getAllOptions();
+        } else {
+            try {
+                var pollId = Long.parseLong(pollIdHint);
+                optionEntities = pollOptionService.getOptions(pollId);
+            } catch (NumberFormatException e) {
+                throw new CheckException(ErrorModel.of(e, TargetType.PARAMETER, "/{id}/"));
+            }
+        }
+        if (optionEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(new PollOptionsResponse(options.stream().map(PollOptionMapper::dtoFrom).toList()), HttpStatus.OK);
+        return new ResponseEntity<>(new PollOptionsResponse(optionEntities.stream().map(PollOptionMapper::dtoFrom).toList()), HttpStatus.OK);
     }
 
 }

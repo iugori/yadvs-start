@@ -7,6 +7,8 @@ public interface RestApi {
 
         String ROOT = "/yadvs/rest/v1";
 
+        String WILDCARD = "-";
+
         interface Polls {
             String ID = "/polls";
             String ROOT = URI.ROOT + ID;

@@ -9,8 +9,8 @@ import ro.yugori.yadvs.api.ApiTest;
 import ro.yugori.yadvs.api.MimeType;
 import ro.yugori.yadvs.api.RestApi;
 import ro.yugori.yadvs.api.Setup;
-import ro.yugori.yadvs.api.dto.PollOption;
 import ro.yugori.yadvs.api.dto.Poll;
+import ro.yugori.yadvs.api.dto.PollOption;
 import ro.yugori.yadvs.api.model.PollStatus;
 
 import java.util.ArrayList;
@@ -33,11 +33,11 @@ public class PollBaseTest extends ApiTest {
         return Long.parseLong(pollUri.substring(pollUri.lastIndexOf("/") + 1));
     }
 
-    public static String buildPollUri(long pollId) {
-        return String.format("%s/%d", POLLS_URI, pollId);
+    public static String buildPollUri(Object pollId) {
+        return String.format("%s/%s", POLLS_URI, pollId);
     }
 
-    public static String buildPollOptionsUri(long pollId) {
+    public static String buildPollOptionsUri(Object pollId) {
         return String.format("%s%s", buildPollUri(pollId), OPTIONS_PATH);
     }
 
@@ -95,11 +95,6 @@ public class PollBaseTest extends ApiTest {
     @AfterAll
     static void cleanDatabase() {
         TEST_POLL_IDS.forEach(PollBaseTest::deletePoll);
-    }
-
-
-    public static void main(String... args) {
-
     }
 
 }

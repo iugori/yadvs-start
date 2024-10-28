@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.iugori.yadvs.delegate.rest.ErrorResponseBuilder;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.domain.PollStatus;
@@ -117,7 +116,7 @@ public class PollService {
             dto = PollMapper.dtoFrom(entity);
             var validationResult = validator.validate(dto);
             if (!validationResult.isEmpty()) {
-                var errors = validationResult.stream().map(ErrorResponseBuilder::errorModelOf).toArray(ErrorModel[]::new);
+                var errors = validationResult.stream().map(ErrorModel::of).toArray(ErrorModel[]::new);
                 throw new CheckException(errors);
             }
         }

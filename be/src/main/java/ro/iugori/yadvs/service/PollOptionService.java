@@ -27,6 +27,10 @@ public class PollOptionService {
         this.pollOptionRepository = pollOptionRepository;
     }
 
+    public List<PollOptionEntity> getAllOptions() {
+        return pollOptionRepository.findAll();
+    }
+
     public List<PollOptionEntity> getOptions(long pollId) {
         pollService.findById(pollId).orElseThrow(() -> new NoSuchElementException(String.format("Cannot find poll`%d'.", pollId)));
         var options = pollOptionRepository.findByPollId(pollId);
@@ -76,5 +80,6 @@ public class PollOptionService {
         pollOptionRepository.flush();
         return Pair.of(entityList, created);
     }
+
 
 }

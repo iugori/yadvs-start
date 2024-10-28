@@ -1,5 +1,6 @@
 package ro.iugori.yadvs.model.error;
 
+import jakarta.validation.ConstraintViolation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +36,22 @@ public class ErrorModel extends RepresentationModel<ErrorModel> implements Seria
     @NonNull
     public String toString() {
         return String.format("%6d: %s", codeAsInt(), message);
+    }
+
+    public static ErrorModel of(Throwable t, TargetType targetType, String targetName) {
+        var error = new ErrorModel();
+        error.setCode(ErrorCode.of(t));
+        error.setMessage(t.getMessage());
+        error.setTarget(targetType, targetName);
+        return error;
+    }
+
+    public static <T> ErrorModel of(ConstraintViolation<T> constraint) {
+        var error = new ErrorModel();
+        error.setCode(ErrorCode.of(constraint.getConstraintDescriptor()));
+        error.setMessage(constraint.getMessage());
+        error.setTarget(TargetType.FIELD, String.valueOf(constraint.getPropertyPath()));
+        return error;
     }
 
 }
