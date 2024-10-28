@@ -1,5 +1,6 @@
 package ro.iugori.yadvs.model.error;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.ConstraintViolation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 
 @NoArgsConstructor
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorModel extends RepresentationModel<ErrorModel> implements Serializable {
 
     private String code;

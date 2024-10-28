@@ -48,4 +48,7 @@ public class PollEntity {
     @OneToMany(mappedBy = "poll", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<PollOptionEntity> options = new ArrayList<>();
 
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<PollHistoryEntity> history = new ArrayList<>();
+
 }

@@ -1,24 +1,24 @@
-package ro.yugori.yadvs.api.poll.option;
+package ro.yugori.yadvs.api.option;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import ro.yugori.yadvs.api.MimeType;
 import ro.yugori.yadvs.api.RestApi;
-import ro.yugori.yadvs.api.poll.PollBaseTest;
 
 import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static ro.yugori.yadvs.api.option.PollOptionsTesting.*;
+import static ro.yugori.yadvs.api.poll.PollTesting.*;
 
-public class PollOptionsErrorsTest extends PollBaseTest {
+public class PollOptionsErrorsTest {
 
     @Test
     void getInvalidPoll() {
-        var pollOptionsUri = String.format("%s/%s%s", POLLS_URI, "un-parsable", OPTIONS_PATH);
-
+        var pollOptionsUri = buildPollOptionsUri("un-parsable");
         given().when()
                 .get(pollOptionsUri).
                 then()
@@ -39,7 +39,7 @@ public class PollOptionsErrorsTest extends PollBaseTest {
 
         given().when()
                 .contentType(MimeType.Application.JSON)
-                .body(Map.of("optionList", List.of(option)))
+                .body(Map.of(OPTION_LIST, List.of(option)))
                 .put(pollOptionsUri).
                 then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)

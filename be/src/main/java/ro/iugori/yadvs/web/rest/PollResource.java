@@ -15,10 +15,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
 import ro.iugori.yadvs.delegate.rest.QueryCriteriaBuilder;
+import ro.iugori.yadvs.model.domain.PollStatus;
 import ro.iugori.yadvs.model.rest.ctx.RestContext;
 import ro.iugori.yadvs.model.rest.shared.Poll;
 import ro.iugori.yadvs.model.rest.sturctured.GetPollsResponse;
-import ro.iugori.yadvs.service.PollOptionService;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.util.mapping.PollOptionMapper;
@@ -35,11 +35,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PollResource {
 
     private final PollService pollService;
-    private final PollOptionService pollOptionService;
 
-    public PollResource(PollService pollService, PollOptionService pollOptionService) {
+    public PollResource(PollService pollService) {
         this.pollService = pollService;
-        this.pollOptionService = pollOptionService;
     }
 
     @Operation(summary = "Create poll", tags = {"polls"})
@@ -62,56 +60,60 @@ public class PollResource {
 
     @Operation(summary = "Replace poll", description = "The `status' input field is ignored.", tags = {"polls"})
     @PutMapping("/{id}")
-    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx
+    public ResponseEntity<Poll> putPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
             , @Check @RequestBody Poll poll) {
         poll.setId(id);
         poll.setStatus(null);
         var optPoll = pollService.put(restCtx, poll);
-        return optPoll.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
+        return optPoll
+                .map(entity -> new ResponseEntity<>(PollMapper.dtoFrom(entity), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(summary = "Update poll", description = "The `status' input field is ignored.", tags = {"polls"})
     @PatchMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, RestApi.MediaType.APPLICATION_MERGE_PATCH_JSON_VALUE})
-    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx
+    public ResponseEntity<Poll> patchPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
             , @RequestBody Poll poll) {
         poll.setId(id);
         poll.setStatus(null);
         var optPoll = pollService.patch(restCtx, poll);
-        return optPoll.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
+        return optPoll
+                .map(entity -> new ResponseEntity<>(PollMapper.dtoFrom(entity), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(summary = "Activate poll", description = "Transitions the poll to `ACTIVE' state.", tags = {"polls"})
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ACTIVATE)
     public ResponseEntity<?> activatePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        throw new NotImplementedException("Not implemented yet.");
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
     @Operation(summary = "Suspend poll", description = "Transitions the poll to `SUSPENDED' state.", tags = {"polls"})
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.SUSPEND)
     public ResponseEntity<?> suspendPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        throw new NotImplementedException("Not implemented yet.");
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
     @Operation(summary = "Close poll", description = "Transitions the poll to `CLOSED' state.", tags = {"polls"})
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.CLOSE)
     public ResponseEntity<?> closePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        throw new NotImplementedException("Not implemented yet.");
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
     @Operation(summary = "Archive poll", description = "Transitions the poll to `ARCHIVED' state.", tags = {"polls"})
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ARCHIVE)
     public ResponseEntity<?> archivePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        throw new NotImplementedException("Not implemented yet.");
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete poll", tags = {"polls"})
@@ -140,15 +142,15 @@ public class PollResource {
         if (optPoll.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        var poll = PollMapper.dtoFrom(optPoll.get());
+        var pollEntity = optPoll.get();
+        var pollDto = PollMapper.dtoFrom(pollEntity);
+        if (CollectionUtils.isNotEmpty(pollEntity.getOptions())) {
+            pollDto.fillOptions(pollEntity.getOptions().stream().map(PollOptionMapper::dtoFrom).sorted().toList());
+        }
         if (restCtx.isFillHATEOASLinks()) {
-            poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
+            pollDto.add(linkTo(PollResource.class).slash(id).withSelfRel());
         }
-        var optionEntityList = pollOptionService.getOptions(id);
-        if (CollectionUtils.isNotEmpty(optionEntityList)) {
-            poll.fillOptions(optionEntityList.stream().map(PollOptionMapper::dtoFrom).toList());
-        }
-        return new ResponseEntity<>(poll, HttpStatus.OK);
+        return new ResponseEntity<>(pollDto, HttpStatus.OK);
     }
 
     @Operation(summary = "Retrieve a collection of polls", tags = {"polls"}, parameters = {

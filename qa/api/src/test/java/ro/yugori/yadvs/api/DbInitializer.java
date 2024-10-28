@@ -2,8 +2,8 @@ package ro.yugori.yadvs.api;
 
 import java.util.stream.IntStream;
 
-import static ro.yugori.yadvs.api.poll.PollBaseTest.createPoll;
-import static ro.yugori.yadvs.api.poll.PollBaseTest.nextPoll;
+import static ro.yugori.yadvs.api.poll.PollTesting.createPoll;
+import static ro.yugori.yadvs.api.poll.PollTesting.nextPoll;
 
 public class DbInitializer {
 

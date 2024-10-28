@@ -9,12 +9,13 @@ import ro.yugori.yadvs.api.dto.Poll;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static ro.yugori.yadvs.api.poll.PollTesting.*;
 
-public class PollErrorsTest extends PollBaseTest {
+public class PollErrorsTest {
 
     @Test
     void getInvalidPollId() {
-        var pollUri = String.format("%s/%s", POLLS_URI, "un-parsable");
+        var pollUri = buildPollUri("un-parsable");
         given().
                 when()
                 .get(pollUri).

@@ -13,9 +13,10 @@ import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static ro.yugori.yadvs.api.poll.PollTesting.*;
 import static ro.yugori.yadvs.api.util.LocalDateTimeMatchers.sameAs;
 
-public class PollCrudTest extends PollBaseTest {
+public class PollCrudTest {
 
     @Test
     void put() {
@@ -28,8 +29,7 @@ public class PollCrudTest extends PollBaseTest {
 
         poll.setStart(null);
 
-        rr = given().
-                when()
+        rr = given().when()
                 .contentType(MimeType.Application.JSON)
                 .body(poll)
                 .put(pollUri).

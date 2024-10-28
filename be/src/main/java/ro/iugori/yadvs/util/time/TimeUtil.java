@@ -2,6 +2,7 @@ package ro.iugori.yadvs.util.time;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -26,8 +27,12 @@ public class TimeUtil {
         return v.atZone(ZoneId.systemDefault());
     }
 
-    public static ZonedDateTime toUtcZone(LocalDateTime v) {
+    public static ZonedDateTime toZoneOffsetUTC(LocalDateTime v) {
         return v.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+    }
+
+    public static LocalDateTime nowUTC() {
+        return LocalDateTime.now(ZoneOffset.UTC);
     }
 
 }
