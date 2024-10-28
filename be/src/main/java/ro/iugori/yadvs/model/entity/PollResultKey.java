@@ -1,10 +1,13 @@
 package ro.iugori.yadvs.model.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class PollResultKey implements Serializable {
 
     private Long pollId;

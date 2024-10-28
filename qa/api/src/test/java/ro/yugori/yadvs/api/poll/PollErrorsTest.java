@@ -9,8 +9,21 @@ import ro.yugori.yadvs.api.dto.Poll;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static ro.yugori.yadvs.api.poll.PollTesting.*;
 
-public class PollErrorsTest extends PollBaseTest {
+public class PollErrorsTest {
+
+    @Test
+    void getInvalidPollId() {
+        var pollUri = buildPollUri("un-parsable");
+        given().
+                when()
+                .get(pollUri).
+                then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.errors[0].code", is("2101: type_conversion"));
+    }
 
     @Test
     void getProjectionError() {
@@ -114,7 +127,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll)
                 .post(POLLS_URI).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))
@@ -137,7 +150,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll2)
                 .put(poll2Uri).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))
@@ -158,7 +171,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("1010: api_error"))
-                .body("_embedded.errors[0].message", is("Unsupported patch type `application/json-patch+json'"));
+                .body("_embedded.errors[0].message", is("Content-Type 'application/json-patch+json;charset=ISO-8859-1' is not supported"));
     }
 
     @Test
@@ -178,7 +191,7 @@ public class PollErrorsTest extends PollBaseTest {
                 .body(poll)
                 .patch(poll2Uri).
                 then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("_embedded.errors", hasSize(1))
                 .body("_embedded.errors[0].code", is("2102: resource_conflict"))
@@ -193,7 +206,7 @@ public class PollErrorsTest extends PollBaseTest {
                 then()
                 .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
-                .body("status", is(405));
+                .body("status", is(HttpStatus.SC_METHOD_NOT_ALLOWED));
 
         given().
                 when()

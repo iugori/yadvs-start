@@ -1,17 +1,27 @@
-package ro.iugori.yadvs;
+package ro.iugori.yadvs._start;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.web.ErrorResponse;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.net.InetAddress;
 import java.util.Optional;
 
-@SpringBootApplication
+
+@SpringBootApplication(scanBasePackageClasses = {
+        ro.iugori.yadvs.aop.rest.RequestMappingAspect.class,
+        ro.iugori.yadvs.config.RestExceptionHandler.class,
+        ro.iugori.yadvs.service.PollService.class,
+        ro.iugori.yadvs.web.rest.PollResource.class,
+
+})
+@EnableJpaRepositories(basePackageClasses = ro.iugori.yadvs.repository.PollRepository.class)
+@EntityScan(basePackageClasses = ro.iugori.yadvs.model.entity.PollEntity.class)
 @Slf4j
 public class YadvsApplication {
 

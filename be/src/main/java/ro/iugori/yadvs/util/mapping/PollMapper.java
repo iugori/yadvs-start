@@ -1,7 +1,7 @@
 package ro.iugori.yadvs.util.mapping;
 
 import org.apache.commons.lang3.BooleanUtils;
-import ro.iugori.yadvs.model.rest.Poll;
+import ro.iugori.yadvs.model.rest.shared.Poll;
 import ro.iugori.yadvs.model.entity.PollEntity;
 
 public class PollMapper {
@@ -51,6 +51,5 @@ public class PollMapper {
         dto.setEnd(entity.getEnd());
         return dto;
     }
-
 
 }

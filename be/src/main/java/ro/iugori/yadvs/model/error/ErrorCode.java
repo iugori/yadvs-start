@@ -1,5 +1,10 @@
 package ro.iugori.yadvs.model.error;
 
+import jakarta.validation.metadata.ConstraintDescriptor;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 public enum ErrorCode {
 
     // System errors
@@ -26,5 +31,25 @@ public enum ErrorCode {
     ErrorCode(int code) {
         this.code = code;
     }
+
+    public static ErrorCode of(Throwable ex) {
+        return switch (ex) {
+            case NumberFormatException ignored -> ErrorCode.TYPE_CONVERSION;
+            case HttpRequestMethodNotSupportedException ignored -> ErrorCode.API_ERROR;
+            case HttpMediaTypeNotSupportedException ignored -> ErrorCode.API_ERROR;
+            case MethodArgumentTypeMismatchException ignored -> ErrorCode.TYPE_CONVERSION;
+            default -> ErrorCode.GENERIC;
+        };
+    }
+
+    public static ErrorCode of(ConstraintDescriptor<?> descriptor) {
+        var nameHint = descriptor.getAnnotation().annotationType().getSimpleName();
+        return switch (nameHint) {
+            case "NotNull" -> ErrorCode.NOT_NULL;
+            case "NotEmpty" -> ErrorCode.NOT_EMPTY;
+            default -> ErrorCode.GENERIC;
+        };
+    }
+
 
 }

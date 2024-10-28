@@ -1,40 +1,44 @@
 package ro.yugori.yadvs.api.poll;
 
-import com.github.javafaker.Faker;
 import io.restassured.response.ValidatableResponse;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.AfterAll;
-import ro.yugori.yadvs.api.*;
+import ro.yugori.yadvs.api.MimeType;
+import ro.yugori.yadvs.api.RestApi;
+import ro.yugori.yadvs.api.Setup;
 import ro.yugori.yadvs.api.dto.Poll;
 import ro.yugori.yadvs.api.model.PollStatus;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static ro.yugori.yadvs.api.ApiTest.FAKER;
 import static ro.yugori.yadvs.api.util.LocalDateTimeMatchers.sameAs;
 
-public class PollBaseTest extends ApiTest {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PollTesting {
 
     public static final String POLLS_URI = Setup.ROOT_REST_URI + "/polls";
 
-    protected static final Faker FAKER = new Faker();
-
-    private static final List<Long> TEST_POLL_IDS = new ArrayList<>();
+    public static final String ACTIVATE_PATH = "/activate";
+    public static final String SUSPEND_PATH = "/suspend";
+    public static final String CLOSE_PATH = "/close";
+    public static final String ARCHIVE_PATH = "/archive";
 
     public static long parsePollId(String pollUri) {
         return Long.parseLong(pollUri.substring(pollUri.lastIndexOf("/") + 1));
     }
 
-    public static String buildPollUri(long pollId) {
-        return String.format("%s/%d", POLLS_URI, pollId);
+    public static String buildPollUri(Object pollId) {
+        return String.format("%s/%s", POLLS_URI, pollId);
     }
 
     public static Poll nextPoll() {
         return Poll.builder()
-                .name(FAKER.name().title())
+                .name(FAKER.name().title() + " " + UUID.randomUUID().toString().replace("-", ""))
                 .description(FAKER.lorem().sentence(20))
                 .multiOption(FAKER.bool().bool())
 //              .start(FAKER.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime())
@@ -42,8 +46,9 @@ public class PollBaseTest extends ApiTest {
                 .build();
     }
 
+
     public static ValidatableResponse createPoll(Poll poll) {
-        var rr = given().
+        return given().
                 when()
                 .contentType(MimeType.Application.JSON)
                 .body(poll)
@@ -60,31 +65,6 @@ public class PollBaseTest extends ApiTest {
                 .body("multiOption", is(poll.getMultiOption()))
                 .body("start", sameAs(poll.getStart()))
                 .body("end", sameAs(poll.getEnd()));
-        registerPollIdForDeletion(parsePollId(rr.extract().header(HttpHeaders.LOCATION)));
-        return rr;
-    }
-
-    public static void deletePoll(long id) {
-        given().
-                when()
-                .delete(buildPollUri(id)).
-                then()
-                .statusCode(in(List.of(HttpStatus.SC_NO_CONTENT, HttpStatus.SC_NOT_FOUND)))
-                .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
-    }
-
-    protected static void registerPollIdForDeletion(long pollId) {
-        TEST_POLL_IDS.add(pollId);
-    }
-
-    @AfterAll
-    static void cleanDatabase() {
-        TEST_POLL_IDS.forEach(PollBaseTest::deletePoll);
-    }
-
-
-    public static void main(String... args) {
-
     }
 
 }

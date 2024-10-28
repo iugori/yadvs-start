@@ -1,9 +1,12 @@
 package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "poll_result")
 @IdClass(PollResultKey.class)

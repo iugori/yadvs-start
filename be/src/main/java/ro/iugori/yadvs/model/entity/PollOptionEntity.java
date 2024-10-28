@@ -1,12 +1,17 @@
 package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "poll_option")
-public class PollOptionEntity {
+public class PollOptionEntity implements Comparable<PollOptionEntity>{
+
+    public static final int DESCRIPTION_LENGTH = 2000;
 
     @Id
     @GeneratedValue
@@ -19,7 +24,12 @@ public class PollOptionEntity {
     @Column(name = "position", nullable = false, precision = 2)
     private Short position;
 
-    @Column(name = "description", nullable = false, length = 2000)
+    @Column(name = "description", nullable = false, length = DESCRIPTION_LENGTH)
     private String description;
+
+    @Override
+    public int compareTo(PollOptionEntity other) {
+        return Short.compare(this.position, other.position);
+    }
 
 }

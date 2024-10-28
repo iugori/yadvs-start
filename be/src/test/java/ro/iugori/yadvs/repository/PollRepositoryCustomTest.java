@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.context.ContextConfiguration;
+import ro.iugori.yadvs._start.YadvsApplication;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.TestContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = YadvsApplication.class)
 @DataJpaTest
 class PollRepositoryCustomTest {
 

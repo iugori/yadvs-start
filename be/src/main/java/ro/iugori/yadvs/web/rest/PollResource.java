@@ -1,29 +1,35 @@
 package ro.iugori.yadvs.web.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
-import ro.iugori.yadvs.model.criteria.QueryCriteria;
-import ro.iugori.yadvs.model.ctx.RestContext;
-import ro.iugori.yadvs.model.error.YadvsRestException;
-import ro.iugori.yadvs.model.rest.Poll;
+import ro.iugori.yadvs.delegate.rest.QueryCriteriaBuilder;
+import ro.iugori.yadvs.model.domain.PollStatus;
+import ro.iugori.yadvs.model.rest.ctx.RestContext;
+import ro.iugori.yadvs.model.rest.shared.Poll;
+import ro.iugori.yadvs.model.rest.sturctured.GetPollsResponse;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
+import ro.iugori.yadvs.util.mapping.PollOptionMapper;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+@Tag(name = "polls", description = "The polls management API")
 @RestController
 @RequestMapping(path = RestApi.URI.Polls.ROOT)
 public class PollResource {
@@ -34,6 +40,7 @@ public class PollResource {
         this.pollService = pollService;
     }
 
+    @Operation(summary = "Create poll", tags = {"polls"})
     @PostMapping
     public ResponseEntity<?> postPoll(@Parameter(hidden = true) RestContext restCtx
             , @Check @RequestBody Poll poll) {
@@ -51,35 +58,65 @@ public class PollResource {
         return new ResponseEntity<>(PollMapper.dtoFrom(entity), headers, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Replace poll", description = "The `status' input field is ignored.", tags = {"polls"})
     @PutMapping("/{id}")
-    public ResponseEntity<?> putPoll(@Parameter(hidden = true) RestContext restCtx
+    public ResponseEntity<Poll> putPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
             , @Check @RequestBody Poll poll) {
         poll.setId(id);
+        poll.setStatus(null);
         var optPoll = pollService.put(restCtx, poll);
-        return optPoll.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
+        return optPoll
+                .map(entity -> new ResponseEntity<>(PollMapper.dtoFrom(entity), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> patchPoll(@Parameter(hidden = true) RestContext restCtx
+    @Operation(summary = "Update poll", description = "The `status' input field is ignored.", tags = {"polls"})
+    @PatchMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, RestApi.MediaType.APPLICATION_MERGE_PATCH_JSON_VALUE})
+    public ResponseEntity<Poll> patchPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id
-            , @RequestBody Poll poll)
-            throws HttpMediaTypeNotSupportedException {
-        var contentType = restCtx.getRequest().getHeader(HttpHeaders.CONTENT_TYPE);
-        if (StringUtils.isNotEmpty(contentType)
-                && contentType.toLowerCase().contains(RestApi.MediaType.APPLICATION_JSON_PATCH_JSON.toString())) {
-            throw new HttpMediaTypeNotSupportedException(
-                    "Unsupported patch type `" + RestApi.MediaType.APPLICATION_JSON_PATCH_JSON + "'");
-        }
+            , @RequestBody Poll poll) {
         poll.setId(id);
+        poll.setStatus(null);
         var optPoll = pollService.patch(restCtx, poll);
-        return optPoll.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(optPoll.get(), HttpStatus.OK);
+        return optPoll
+                .map(entity -> new ResponseEntity<>(PollMapper.dtoFrom(entity), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @Operation(summary = "Activate poll", description = "Transitions the poll to `ACTIVE' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ACTIVATE)
+    public ResponseEntity<?> activatePoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Suspend poll", description = "Transitions the poll to `SUSPENDED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.SUSPEND)
+    public ResponseEntity<?> suspendPoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.SUSPENDED);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Close poll", description = "Transitions the poll to `CLOSED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.CLOSE)
+    public ResponseEntity<?> closePoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.CLOSED);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Archive poll", description = "Transitions the poll to `ARCHIVED' state.", tags = {"polls"})
+    @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ARCHIVE)
+    public ResponseEntity<?> archivePoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ARCHIVED);
+        return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Delete poll", tags = {"polls"})
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
@@ -90,44 +127,40 @@ public class PollResource {
         if (Boolean.FALSE.equals(delResult)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        throw new YadvsRestException(restCtx, "Archiving via delete not yet supported");
+        throw new NotImplementedException("Archiving via delete is not supported.");
     }
 
+    @Operation(summary = "Retrieve poll", tags = {"polls"}, parameters = {
+            @Parameter(in = ParameterIn.HEADER,
+                    name = RestApi.Header.ACCEPT_LINKS,
+                    description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPoll(@PathVariable("id") long id) {
+    public ResponseEntity<Poll> getPoll(@Parameter(hidden = true) RestContext restCtx
+            , @PathVariable("id") long id) {
         var optPoll = pollService.findById(id);
         if (optPoll.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        var poll = PollMapper.dtoFrom(optPoll.get());
-        poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
-        return new ResponseEntity<>(poll, HttpStatus.OK);
+        var pollEntity = optPoll.get();
+        var pollDto = PollMapper.dtoFrom(pollEntity);
+        if (CollectionUtils.isNotEmpty(pollEntity.getOptions())) {
+            pollDto.fillOptions(pollEntity.getOptions().stream().map(PollOptionMapper::dtoFrom).sorted().toList());
+        }
+        if (restCtx.isFillHATEOASLinks()) {
+            pollDto.add(linkTo(PollResource.class).slash(id).withSelfRel());
+        }
+        return new ResponseEntity<>(pollDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "Retrieve a collection of polls", tags = {"polls"}, parameters = {
+            @Parameter(in = ParameterIn.HEADER,
+                    name = RestApi.Header.ACCEPT_LINKS,
+                    description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
+    })
     @GetMapping
-    public ResponseEntity<CollectionModel<Poll>> getPolls(@Parameter(hidden = true) RestContext restCtx
-            , @RequestParam(RestApi.Param.FIELDS) Optional<String> fields
-            , @RequestParam(RestApi.Param.SORT) Optional<String> sorting
-            , @RequestParam(RestApi.Param.PAGE_NO) Optional<String> pageNo
-            , @RequestParam(RestApi.Param.PAGE_SIZE) Optional<String> pageSize
-    ) {
-        var qcBuilder = QueryCriteria.builder()
-                .select(fields.orElse(null))
-                .orderBy(sorting.orElse(null))
-                .page(pageNo.orElse(null), pageSize.orElse(null));
-
-        var queryParams = restCtx.getRequest().getParameterMap();
-        for (var entry : queryParams.entrySet()) {
-            var key = entry.getKey();
-            if (!key.startsWith(RestApi.RESERVED_PARAM)) {
-                var value = entry.getValue();
-                if (value != null) {
-                    qcBuilder.where(key, value.length == 1 ? value[0] : value);
-                }
-            }
-        }
-
-        var qc = qcBuilder.build();
+    public ResponseEntity<GetPollsResponse> getPolls(@Parameter(hidden = true) RestContext restCtx) {
+        var qc = QueryCriteriaBuilder.of(restCtx);
         var records = pollService.findAndCount(restCtx, qc);
 
         var headers = new LinkedMultiValueMap<String, String>();
@@ -148,11 +181,13 @@ public class PollResource {
         var dtoList = records.getFirst().stream()
                 .map(entity -> {
                     var dto = PollMapper.dtoFrom(entity);
-                    dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
+                    if (restCtx.isFillHATEOASLinks()) {
+                        dto.add(linkTo(PollResource.class).slash(dto.getId()).withSelfRel());
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(CollectionModel.of(dtoList), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new GetPollsResponse(dtoList), headers, HttpStatus.OK);
     }
 
 }

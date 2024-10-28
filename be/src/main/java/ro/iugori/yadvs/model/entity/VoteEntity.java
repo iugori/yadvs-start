@@ -1,14 +1,20 @@
 package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "vote")
-public class  VoteEntity {
+public class VoteEntity {
 
     @Id
     @GeneratedValue

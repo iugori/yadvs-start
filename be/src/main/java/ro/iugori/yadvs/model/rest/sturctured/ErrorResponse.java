@@ -1,8 +1,7 @@
-package ro.iugori.yadvs.model.rest;
+package ro.iugori.yadvs.model.rest.sturctured;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
@@ -15,6 +14,9 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse extends RepresentationModel<ErrorResponse> {
+
+    public record ErrorsWrapper(List<ErrorModel> errors) {
+    }
 
     @Getter
     @Setter
@@ -71,13 +73,8 @@ public class ErrorResponse extends RepresentationModel<ErrorResponse> {
     }
 
     @JsonProperty("_embedded")
-    public Object getErrors() {
-        @AllArgsConstructor
-        @Getter
-        class Wrapper {
-            private final List<ErrorModel> errors;
-        }
-        return new Wrapper(errors);
+    public ErrorsWrapper getErrors() {
+        return new ErrorsWrapper(errors);
     }
 
 }
