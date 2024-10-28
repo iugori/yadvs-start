@@ -53,7 +53,6 @@ public class PollBaseTest extends ApiTest {
 
     public static PollOption nextOption() {
         return PollOption.builder()
-                .index((short) FAKER.number().numberBetween(0, 1000))
                 .description(FAKER.lorem().sentence(20))
                 .build();
     }

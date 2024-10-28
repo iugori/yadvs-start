@@ -1,14 +1,20 @@
 package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import ro.iugori.yadvs.model.domain.PollStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "name"), name = "poll")
 public class PollEntity {

@@ -14,14 +14,14 @@ import java.util.Optional;
 
 
 @SpringBootApplication(scanBasePackageClasses = {
-        ro.iugori.yadvs.aop._PackageMarker.class,
-        ro.iugori.yadvs.config._PackageMarker.class,
-        ro.iugori.yadvs.service._PackageMarker.class,
-        ro.iugori.yadvs.web._PackageMarker.class,
+        ro.iugori.yadvs.aop.rest.RequestMappingAspect.class,
+        ro.iugori.yadvs.config.RestExceptionHandler.class,
+        ro.iugori.yadvs.service.PollService.class,
+        ro.iugori.yadvs.web.rest.PollResource.class,
 
 })
-@EnableJpaRepositories(basePackageClasses = ro.iugori.yadvs.repository._PackageMarker.class)
-@EntityScan(basePackageClasses = ro.iugori.yadvs.model.entity._PackageMarker.class)
+@EnableJpaRepositories(basePackageClasses = ro.iugori.yadvs.repository.PollRepository.class)
+@EntityScan(basePackageClasses = ro.iugori.yadvs.model.entity.PollEntity.class)
 @Slf4j
 public class YadvsApplication {
 

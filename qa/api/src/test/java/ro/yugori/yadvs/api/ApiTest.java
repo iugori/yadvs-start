@@ -8,6 +8,7 @@ public abstract class ApiTest {
 
     static {
         RestAssured.baseURI = Setup.BASE_URL;
+        // RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
     }
 
     public static JSONObject bodyAsJSONObject(ValidatableResponse r) {

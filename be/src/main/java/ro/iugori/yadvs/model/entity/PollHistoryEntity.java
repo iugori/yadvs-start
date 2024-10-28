@@ -1,12 +1,15 @@
 package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import ro.iugori.yadvs.model.domain.PollAction;
 
 import java.time.LocalDateTime;
 
-@Data
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "poll_history")
 public class PollHistoryEntity {

@@ -10,7 +10,7 @@ import lombok.*;
 public class PollOption {
 
     private Long id;
-    private Short index;
+    private Short position;
     private String description;
 
 }
