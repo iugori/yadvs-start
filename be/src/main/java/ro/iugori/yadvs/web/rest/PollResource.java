@@ -96,7 +96,7 @@ public class PollResource {
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.SUSPEND)
     public ResponseEntity<?> suspendPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.SUSPENDED);
         return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
@@ -104,7 +104,7 @@ public class PollResource {
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.CLOSE)
     public ResponseEntity<?> closePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.CLOSED);
         return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 
@@ -112,7 +112,7 @@ public class PollResource {
     @PatchMapping(value = "/{id}" + RestApi.URI.Polls.ARCHIVE)
     public ResponseEntity<?> archivePoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
-        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ACTIVE);
+        var pollEntity = pollService.putStatus(restCtx, id, PollStatus.ARCHIVED);
         return new ResponseEntity<>(PollMapper.dtoFrom(pollEntity), HttpStatus.OK);
     }
 

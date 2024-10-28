@@ -24,6 +24,9 @@ public final class PollTesting {
     public static final String POLLS_URI = Setup.ROOT_REST_URI + "/polls";
 
     public static final String ACTIVATE_PATH = "/activate";
+    public static final String SUSPEND_PATH = "/suspend";
+    public static final String CLOSE_PATH = "/close";
+    public static final String ARCHIVE_PATH = "/archive";
 
     public static long parsePollId(String pollUri) {
         return Long.parseLong(pollUri.substring(pollUri.lastIndexOf("/") + 1));
