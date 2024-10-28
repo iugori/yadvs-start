@@ -19,7 +19,7 @@ public class VoteResource {
 
     @Operation(summary = "Cast vote", tags = {"votes"})
     @PostMapping
-    public ResponseEntity<?> castVote(@Check @RequestBody Vote vote) {
+    public ResponseEntity<?> postVote(@Check @RequestBody Vote vote) {
         throw new NotImplementedException("Not implemented yet.");
     }
 

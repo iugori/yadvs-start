@@ -41,7 +41,7 @@ public class PollOptionResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         var restResponse = new PollOptionsResponse(options.getFirst().stream().map(PollOptionMapper::dtoFrom).toList());
-        var restResponseStatus = options.getSecond() ? HttpStatus.CREATED : HttpStatus.OK;
+        var restResponseStatus = options.getSecond() > 0 ? HttpStatus.CREATED : HttpStatus.OK;
         return new ResponseEntity<>(restResponse, restResponseStatus);
     }
 

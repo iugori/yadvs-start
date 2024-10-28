@@ -1,5 +1,7 @@
 package ro.yugori.yadvs.api.poll.option;
 
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,42 @@ public class PollOptionsTest extends PollBaseTest {
     public static final String OPTION_LIST = "optionList";
 
     @Test
-    void crud() {
+    void pollEmbeddedOptions() {
+        var rr = createPoll(nextPoll());
+        var pollId = parsePollId(rr.extract().header(HttpHeaders.LOCATION));
+        var pollUri = buildPollUri(pollId);
+
+        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).
+                when()
+                .get(pollUri).
+                then()
+                .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded", nullValue());
+
+        var pollOptionsUri = buildPollOptionsUri(pollId);
+
+        var options = List.of(nextOption(), nextOption(), nextOption());
+        given().when()
+                .contentType(MimeType.Application.JSON)
+                .body(Map.of(OPTION_LIST, options))
+                .put(pollOptionsUri).
+                then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body(OPTION_LIST, hasSize(3));
+
+        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).
+                when()
+                .get(pollUri).
+                then()
+                .statusCode(HttpStatus.SC_OK)
+                .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
+                .body("_embedded.optionList", hasSize(3));
+    }
+
+    @Test
+    void crudWorkflow() {
         var rr = createPoll(nextPoll());
         var pollId = parsePollId(rr.extract().header(HttpHeaders.LOCATION));
         var pollOptionsUri = buildPollOptionsUri(pollId);

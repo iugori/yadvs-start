@@ -39,7 +39,7 @@ public class PollOptionService {
     }
 
     @Transactional
-    public Pair<List<PollOptionEntity>, Boolean> putOptions(CallContext callCtx, long pollId, List<PollOption> dtoList) {
+    public Pair<List<PollOptionEntity>, Integer> putOptions(CallContext callCtx, long pollId, List<PollOption> dtoList) {
         var entityList = getOptions(pollId);
         int commonLength = Math.min(entityList.size(), dtoList.size());
 
@@ -50,7 +50,7 @@ public class PollOptionService {
 
         Collections.sort(dtoList);
         IntStream.range(0, dtoList.size()).forEach(i -> dtoList.get(i).setPosition((short) (i + 1)));
-        var created = false;
+        var deltaNo = 0;
 
         IntStream.range(0, commonLength).forEach(i -> {
             var entity = entityList.get(i);
@@ -59,6 +59,7 @@ public class PollOptionService {
         });
 
         if (entityList.size() > commonLength) {
+            deltaNo = commonLength - entityList.size();
             IntStream.range(commonLength, entityList.size()).forEach(i -> {
                 pollOptionRepository.delete(entityList.get(commonLength));
                 entityList.remove(commonLength);
@@ -66,7 +67,7 @@ public class PollOptionService {
         }
 
         if (dtoList.size() > commonLength) {
-            created = true;
+            deltaNo = dtoList.size() - commonLength;
             IntStream.range(commonLength, dtoList.size()).forEach(i -> {
                 var entity = new PollOptionEntity();
                 PollOptionMapper.putDto2EntityUserInput(dtoList.get(i), entity);
@@ -78,7 +79,7 @@ public class PollOptionService {
         }
 
         pollOptionRepository.flush();
-        return Pair.of(entityList, created);
+        return Pair.of(entityList, deltaNo);
     }
 
 

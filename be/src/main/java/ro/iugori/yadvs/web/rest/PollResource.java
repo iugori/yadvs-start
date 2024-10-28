@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -14,11 +15,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ro.iugori.yadvs.aop.rest.Check;
 import ro.iugori.yadvs.delegate.rest.QueryCriteriaBuilder;
-import ro.iugori.yadvs.model.rest.sturctured.GetPollsResponse;
-import ro.iugori.yadvs.model.rest.shared.Poll;
 import ro.iugori.yadvs.model.rest.ctx.RestContext;
+import ro.iugori.yadvs.model.rest.shared.Poll;
+import ro.iugori.yadvs.model.rest.sturctured.GetPollsResponse;
+import ro.iugori.yadvs.service.PollOptionService;
 import ro.iugori.yadvs.service.PollService;
 import ro.iugori.yadvs.util.mapping.PollMapper;
+import ro.iugori.yadvs.util.mapping.PollOptionMapper;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.util.List;
@@ -32,9 +35,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PollResource {
 
     private final PollService pollService;
+    private final PollOptionService pollOptionService;
 
-    public PollResource(PollService pollService) {
+    public PollResource(PollService pollService, PollOptionService pollOptionService) {
         this.pollService = pollService;
+        this.pollOptionService = pollOptionService;
     }
 
     @Operation(summary = "Create poll", tags = {"polls"})
@@ -129,7 +134,7 @@ public class PollResource {
                     description = "If the value contains `" + RestApi.Header.Value.ACCEPT_LINKS_HATEOAS + "' then the response body will contain the Hypermedia as the engine of application state links.")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPoll(@Parameter(hidden = true) RestContext restCtx
+    public ResponseEntity<Poll> getPoll(@Parameter(hidden = true) RestContext restCtx
             , @PathVariable("id") long id) {
         var optPoll = pollService.findById(id);
         if (optPoll.isEmpty()) {
@@ -138,6 +143,10 @@ public class PollResource {
         var poll = PollMapper.dtoFrom(optPoll.get());
         if (restCtx.isFillHATEOASLinks()) {
             poll.add(linkTo(PollResource.class).slash(id).withSelfRel());
+        }
+        var optionEntityList = pollOptionService.getOptions(id);
+        if (CollectionUtils.isNotEmpty(optionEntityList)) {
+            poll.fillOptions(optionEntityList.stream().map(PollOptionMapper::dtoFrom).toList());
         }
         return new ResponseEntity<>(poll, HttpStatus.OK);
     }
