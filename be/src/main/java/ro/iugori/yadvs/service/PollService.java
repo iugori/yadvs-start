@@ -3,6 +3,7 @@ package ro.iugori.yadvs.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import ro.iugori.yadvs.model.domain.PollAction;
 import ro.iugori.yadvs.model.domain.PollStatus;
 import ro.iugori.yadvs.model.entity.PollEntity;
 import ro.iugori.yadvs.model.entity.PollHistoryEntity;
+import ro.iugori.yadvs.model.entity.PollResultEntity;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
@@ -20,6 +22,7 @@ import ro.iugori.yadvs.model.rest.shared.Poll;
 import ro.iugori.yadvs.repository.PollHistoryRepository;
 import ro.iugori.yadvs.repository.PollRepository;
 import ro.iugori.yadvs.repository.PollRepositoryCustom;
+import ro.iugori.yadvs.repository.PollResultRepository;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.util.time.TimeUtil;
 
@@ -35,15 +38,18 @@ public class PollService {
     private final PollRepository pollRepository;
     private final PollHistoryRepository pollHistoryRepository;
     private final PollRepositoryCustom pollRepositoryCustom;
+    private final PollResultRepository pollResultRepository;
 
     public PollService(Validator validator
             , PollRepository pollRepository
             , PollHistoryRepository pollHistoryRepository
-            , PollRepositoryCustom pollRepositoryCustom) {
+            , PollRepositoryCustom pollRepositoryCustom
+            , PollResultRepository pollResultRepository) {
         this.validator = validator;
         this.pollRepository = pollRepository;
         this.pollHistoryRepository = pollHistoryRepository;
         this.pollRepositoryCustom = pollRepositoryCustom;
+        this.pollResultRepository = pollResultRepository;
     }
 
     public static void checkPollIsEditable(CallContext callCtx, PollEntity entity) {
@@ -114,18 +120,42 @@ public class PollService {
     }
 
     @Transactional
-    public PollEntity putStatus(CallContext callCtx, long id, PollStatus newStatus) {
+    public PollEntity putStatus(CallContext callCtx, long id, PollStatus nextStatus) {
         var pollEntity = pollRepository.findById(id).orElseThrow(() -> {
             log.error("{} Poll `{}' cannot be updated because it does not exist.", callCtx.getLogRef(), id);
             return new EntityNotFoundException(String.format("Poll `%s'", id));
         });
-        checkPollStatusTransition(callCtx, id, pollEntity.getStatus(), newStatus);
-        pollEntity.setStatus(newStatus);
+        checkPollStatusTransition(callCtx, id, pollEntity.getStatus(), nextStatus);
+
+        if (PollStatus.ACTIVE.equals(nextStatus)) {
+            if (CollectionUtils.isEmpty(pollEntity.getOptions())) {
+                log.error("{} Poll `{}' cannot be activated without any option.", callCtx.getLogRef(), id);
+                var error = new ErrorModel();
+                error.setCode(ErrorCode.RESOURCE_CONFLICT);
+                error.setMessage("Polls with 0 options cannot be activated");
+                error.setTarget(TargetType.FIELD, "options");
+                throw new CheckException(error);
+            }
+
+            if (pollEntity.getHistory().stream()
+                    .noneMatch(historyEntry -> historyEntry.getAction().equals(PollAction.ACTIVATED))) {
+                pollEntity.getOptions().forEach(optionEntity -> {
+                    var resultEntity = new PollResultEntity();
+                    resultEntity.setPollId(id);
+                    resultEntity.setOptionId(optionEntity.getId());
+                    resultEntity.setVoteCount(0);
+                    pollResultRepository.save(resultEntity);
+                });
+                pollResultRepository.flush();
+            }
+        }
+
+        pollEntity.setStatus(nextStatus);
         pollEntity = pollRepository.saveAndFlush(pollEntity);
 
         var historyEntity = new PollHistoryEntity();
         historyEntity.setPoll(pollEntity);
-        historyEntity.setAction(PollAction.forStatus(newStatus));
+        historyEntity.setAction(PollAction.forStatus(nextStatus));
         historyEntity.setActionTime(TimeUtil.nowUTC());
         pollHistoryRepository.saveAndFlush(historyEntity);
 

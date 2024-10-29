@@ -12,6 +12,7 @@ import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.rest.shared.Vote;
 import ro.iugori.yadvs.repository.PollOptionRepository;
+import ro.iugori.yadvs.repository.PollResultRepository;
 import ro.iugori.yadvs.repository.VoteRepository;
 import ro.iugori.yadvs.util.time.TimeUtil;
 
@@ -21,10 +22,14 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
     private final PollOptionRepository pollOptionRepository;
+    private final PollResultRepository pollResultRepository;
 
-    public VoteService(VoteRepository voteRepository, PollOptionRepository pollOptionRepository) {
+    public VoteService(VoteRepository voteRepository
+            , PollOptionRepository pollOptionRepository
+            , PollResultRepository pollResultRepository) {
         this.voteRepository = voteRepository;
         this.pollOptionRepository = pollOptionRepository;
+        this.pollResultRepository = pollResultRepository;
     }
 
     @Transactional
@@ -51,6 +56,8 @@ public class VoteService {
         voteEntity.setOption(optionEntity);
         voteEntity.setCastOn(TimeUtil.nowUTC());
         voteRepository.saveAndFlush(voteEntity);
+
+        pollResultRepository.incrementVoteCount(optionEntity.getPoll().getId(), optionEntity.getId());
     }
 
 }
