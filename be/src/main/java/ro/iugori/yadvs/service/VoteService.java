@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.domain.PollStatus;
+import ro.iugori.yadvs.model.entity.PollResultEntity;
 import ro.iugori.yadvs.model.entity.VoteEntity;
 import ro.iugori.yadvs.model.error.CheckException;
 import ro.iugori.yadvs.model.error.ErrorCode;
@@ -12,8 +13,11 @@ import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.rest.shared.Vote;
 import ro.iugori.yadvs.repository.PollOptionRepository;
+import ro.iugori.yadvs.repository.PollResultRepository;
 import ro.iugori.yadvs.repository.VoteRepository;
 import ro.iugori.yadvs.util.time.TimeUtil;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -21,10 +25,14 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
     private final PollOptionRepository pollOptionRepository;
+    private final PollResultRepository pollResultRepository;
 
-    public VoteService(VoteRepository voteRepository, PollOptionRepository pollOptionRepository) {
+    public VoteService(VoteRepository voteRepository
+            , PollOptionRepository pollOptionRepository
+            , PollResultRepository pollResultRepository) {
         this.voteRepository = voteRepository;
         this.pollOptionRepository = pollOptionRepository;
+        this.pollResultRepository = pollResultRepository;
     }
 
     @Transactional
@@ -51,6 +59,12 @@ public class VoteService {
         voteEntity.setOption(optionEntity);
         voteEntity.setCastOn(TimeUtil.nowUTC());
         voteRepository.saveAndFlush(voteEntity);
+
+        pollResultRepository.incrementVoteCount(optionEntity.getPoll().getId(), optionEntity.getId());
+    }
+
+    public List<PollResultEntity> getVotes(long pollId) {
+        return pollResultRepository.findByPollId(pollId);
     }
 
 }

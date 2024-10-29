@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.2'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.jfree:jfreechart:1.5.5'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

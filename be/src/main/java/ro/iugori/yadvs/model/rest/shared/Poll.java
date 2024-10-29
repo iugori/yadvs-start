@@ -18,8 +18,6 @@ import java.util.Collection;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @XFieldComparison(field1 = "start", rel = "lt", field2 = "end")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Poll extends RepresentationModel<Poll> {

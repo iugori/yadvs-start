@@ -21,6 +21,6 @@ public class PollResultEntity {
     private Long optionId;
 
     @Column(name = "vote_count", nullable = false, precision = 10)
-    private Integer position;
+    private Integer voteCount;
 
 }

@@ -29,10 +29,7 @@ public interface RestApi {
         }
 
         interface Reports {
-            String ID = "/reports";
-            String ROOT = URI.ROOT + ID;
-
-            String POLL = "/poll";
+            String ID = "/report";
         }
     }
 
