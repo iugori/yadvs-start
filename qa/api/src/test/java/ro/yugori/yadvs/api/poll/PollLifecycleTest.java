@@ -1,7 +1,5 @@
 package ro.yugori.yadvs.api.poll;
 
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -33,7 +31,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body(OPTION_LIST, hasSize(1));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
@@ -41,7 +39,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("ACTIVE"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
@@ -49,7 +47,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("SUSPENDED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
@@ -57,7 +55,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("ACTIVE"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + CLOSE_PATH).
                 then()
@@ -65,7 +63,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("CLOSED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
@@ -89,7 +87,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body(OPTION_LIST, hasSize(2));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
@@ -97,7 +95,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("ACTIVE"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
@@ -105,7 +103,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("SUSPENDED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + CLOSE_PATH).
                 then()
@@ -113,7 +111,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("CLOSED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
@@ -128,28 +126,28 @@ public class PollLifecycleTest {
         var pollId = parsePollId(rr.extract().header(HttpHeaders.LOCATION));
         var pollUri = buildPollUri(pollId);
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + CLOSE_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
@@ -167,7 +165,7 @@ public class PollLifecycleTest {
                 .body(OPTION_LIST, hasSize(1));
 
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
@@ -175,14 +173,14 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("ACTIVE"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
@@ -190,7 +188,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
@@ -198,7 +196,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("SUSPENDED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
@@ -206,7 +204,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + CLOSE_PATH).
                 then()
@@ -214,14 +212,14 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("CLOSED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
@@ -229,7 +227,7 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ARCHIVE_PATH).
                 then()
@@ -237,21 +235,21 @@ public class PollLifecycleTest {
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue())
                 .body("status", is("ARCHIVED"));
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + ACTIVATE_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + SUSPEND_PATH).
                 then()
                 .statusCode(HttpStatus.SC_CONFLICT)
                 .header(RestApi.Header.X_CORRELATION_ID, notNullValue());
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .patch(pollUri + CLOSE_PATH).
                 then()

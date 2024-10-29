@@ -12,7 +12,6 @@ import ro.iugori.yadvs.model.entity.PollOptionEntity;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PollOption implements Comparable<PollOption> {
 

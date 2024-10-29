@@ -1,7 +1,5 @@
 package ro.yugori.yadvs.api.vote;
 
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -26,8 +24,7 @@ public class VoteErrorTest {
 
     @Test
     void voteInvalidOption() {
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).
-                when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .body(new Vote(0L))
                 .post(VOTES_URI).
@@ -55,8 +52,7 @@ public class VoteErrorTest {
         var jsonBody = bodyAsJSONObject(rr);
         var optionId = jsonBody.getJSONArray(OPTION_LIST).getJSONObject(0).getLong("id");
 
-        given().filters(new RequestLoggingFilter(), new ResponseLoggingFilter()).
-                when()
+        given().when()
                 .contentType(MimeType.Application.JSON)
                 .body(new Vote(optionId))
                 .post(VOTES_URI).

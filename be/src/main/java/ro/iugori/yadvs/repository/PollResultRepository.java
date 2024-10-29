@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import ro.iugori.yadvs.model.entity.PollResultEntity;
 import ro.iugori.yadvs.model.entity.PollResultKey;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,5 +23,7 @@ public interface PollResultRepository extends JpaRepository<PollResultEntity, Po
     @Modifying
     @Query("UPDATE PollResultEntity r SET r.voteCount = r.voteCount + 1 WHERE r.pollId = :pollId AND r.optionId = :optionId")
     void incrementVoteCount(@Param("pollId") Long pollId, @Param("optionId") Long optionId);
+
+    List<PollResultEntity> findByPollId(Long pollId);
 
 }

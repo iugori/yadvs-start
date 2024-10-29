@@ -11,7 +11,6 @@ import ro.iugori.yadvs.model.domain.ChartType;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PollReportSpec {
 
