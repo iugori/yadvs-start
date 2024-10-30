@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.util.validation;
+package ro.iugori.yadvs.delegate.validation;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

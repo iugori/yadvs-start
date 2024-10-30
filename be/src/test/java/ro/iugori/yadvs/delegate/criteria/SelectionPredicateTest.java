@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.model.criteria;
+package ro.iugori.yadvs.delegate.criteria;
 
 import org.junit.jupiter.api.Test;
 import ro.iugori.yadvs.delegate.criteria.SelectionFilter;

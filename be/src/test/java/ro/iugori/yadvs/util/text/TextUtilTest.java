@@ -1,7 +1,6 @@
-package ro.iugori.yadvs.util.test;
+package ro.iugori.yadvs.util.text;
 
 import org.junit.jupiter.api.Test;
-import ro.iugori.yadvs.util.text.TextUtil;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

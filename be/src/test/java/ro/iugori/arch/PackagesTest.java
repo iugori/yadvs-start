@@ -12,7 +12,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(packages = "ro.iugori.yadvs", importOptions = {ImportOption.DoNotIncludeTests.class})
-public class LeafPackagesTest {
+public class PackagesTest {
 
     @ArchTest
     static final ArchRule LEAF_PACKAGES = classes().should(beInALeafPackage());

@@ -7,6 +7,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import ro.iugori.yadvs._start.YadvsApplication;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 class DoNotIncludeMainClass implements ImportOption {
@@ -33,5 +34,21 @@ public class LayersTest {
             .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
             .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller")
             .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service");
+
+
+    @ArchTest
+    static ArchRule WEB_REST = noClasses().that().resideInAPackage("..web.rest..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage("..repository..");
+
+    @ArchTest
+    static ArchRule SERVICE = noClasses().that().resideInAPackage("..service..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage("..web..", "..repository.impl");
+
+    @ArchTest
+    static ArchRule REPOSITORY = noClasses().that().resideInAPackage("..repository..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage("..web..", "..service..");
 
 }

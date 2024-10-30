@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+top to bottom direction
+
+[EntryPoint] <<.._start>> as main
+[Repository Internals] <<..repository.config..>> <<..repository.impl..>> as repo_internals
+[Repository API] <<..repository.api..>> as repo_api
+[Service] <<..service..>> as svc
+[REST API] <<..web.rest..>> as rest
+
+main --> repo_api
+main --> repo_internals
+main --> svc
+main --> rest
+repo_internals -> repo_api
+svc --> repo_api
+rest --> svc
+
+@enduml

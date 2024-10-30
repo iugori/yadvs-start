@@ -6,7 +6,7 @@ import java.text.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class QueryCriteriaUtilTest {
+class QueryCriteriaBuilderTest {
 
     @Test
     void builder() throws ParseException {

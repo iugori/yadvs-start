@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.repository;
+package ro.iugori.yadvs.repository.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,8 +13,6 @@ import ro.iugori.yadvs._start.YadvsApplication;
 import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.TestContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
-import ro.iugori.yadvs.repository.api.PollRepository;
-import ro.iugori.yadvs.repository.api.PollRepositoryCustom;
 import ro.iugori.yadvs.repository.config.CustomRepositoryConfig;
 
 import java.io.IOException;
