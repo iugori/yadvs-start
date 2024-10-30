@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import ro.iugori.yadvs.model.domain.PollStatus;
+import ro.iugori.yadvs.model.business.PollStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

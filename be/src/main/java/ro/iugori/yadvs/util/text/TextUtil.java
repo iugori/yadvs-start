@@ -1,8 +1,12 @@
 package ro.iugori.yadvs.util.text;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.regex.Pattern;
 
-public class TextUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TextUtil {
 
     private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("[a-zA-Z_$][a-zA-Z0-9_$]*");
 

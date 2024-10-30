@@ -1,12 +1,16 @@
 package ro.iugori.yadvs.util.time;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimeUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimeUtil {
 
     private static final DateTimeFormatter TS_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter TS_ISO_8601_Z = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
