@@ -3,7 +3,8 @@ package ro.iugori.yadvs.util.validation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
-import ro.iugori.yadvs.model.rest.shared.Poll;
+import ro.iugori.yadvs.delegate.validation.XFieldComparison;
+import ro.iugori.yadvs.model.business.Poll;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

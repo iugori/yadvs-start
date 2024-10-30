@@ -1,6 +1,7 @@
 package ro.iugori.yadvs.model.criteria;
 
 import org.junit.jupiter.api.Test;
+import ro.iugori.yadvs.delegate.criteria.SortOrder;
 
 import java.text.ParseException;
 

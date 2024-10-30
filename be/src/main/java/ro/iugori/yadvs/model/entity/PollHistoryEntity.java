@@ -2,7 +2,7 @@ package ro.iugori.yadvs.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ro.iugori.yadvs.model.domain.PollAction;
+import ro.iugori.yadvs.model.business.PollAction;
 
 import java.time.LocalDateTime;
 

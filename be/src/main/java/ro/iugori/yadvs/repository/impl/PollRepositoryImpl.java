@@ -5,12 +5,12 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
-import ro.iugori.yadvs.delegate.query.CriteriaBuilderDelegate;
-import ro.iugori.yadvs.model.criteria.QueryCriteria;
+import ro.iugori.yadvs.delegate.criteria.CriteriaBuilderDelegate;
+import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
-import ro.iugori.yadvs.repository.core.PollRepositoryCustom;
-import ro.iugori.yadvs.util.mapping.ArrayToBeanMapper;
+import ro.iugori.yadvs.repository.api.PollRepositoryCustom;
+import ro.iugori.yadvs.delegate.mapping.ArrayToBeanMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;

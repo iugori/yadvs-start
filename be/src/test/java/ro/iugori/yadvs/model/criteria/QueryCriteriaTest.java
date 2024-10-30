@@ -1,6 +1,10 @@
 package ro.iugori.yadvs.model.criteria;
 
 import org.junit.jupiter.api.Test;
+import ro.iugori.yadvs.delegate.criteria.ProjectionFilter;
+import ro.iugori.yadvs.delegate.criteria.QueryCriteria;
+import ro.iugori.yadvs.delegate.criteria.SelectionFilter;
+import ro.iugori.yadvs.delegate.criteria.SortOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
