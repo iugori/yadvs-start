@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.entity.PollOptionEntity;
 import ro.iugori.yadvs.model.rest.shared.PollOption;
-import ro.iugori.yadvs.repository.PollOptionRepository;
+import ro.iugori.yadvs.repository.core.PollOptionRepository;
 import ro.iugori.yadvs.util.mapping.PollOptionMapper;
 
 import java.util.Collections;

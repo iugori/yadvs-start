@@ -13,6 +13,9 @@ import ro.iugori.yadvs._start.YadvsApplication;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.TestContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
+import ro.iugori.yadvs.repository.core.PollRepository;
+import ro.iugori.yadvs.repository.core.PollRepositoryCustom;
+import ro.iugori.yadvs.repository.impl.CustomRepositoryConfig;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -20,8 +23,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextConfiguration(classes = YadvsApplication.class)
-@DataJpaTest
+@DataJpaTest()
+@ContextConfiguration(classes = {YadvsApplication.class, CustomRepositoryConfig.class})
 class PollRepositoryCustomTest {
 
     @Autowired

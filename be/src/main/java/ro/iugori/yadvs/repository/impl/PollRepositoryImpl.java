@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.repository;
+package ro.iugori.yadvs.repository.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -9,6 +9,7 @@ import ro.iugori.yadvs.delegate.query.CriteriaBuilderDelegate;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;
 import ro.iugori.yadvs.model.ctx.CallContext;
 import ro.iugori.yadvs.model.entity.PollEntity;
+import ro.iugori.yadvs.repository.core.PollRepositoryCustom;
 import ro.iugori.yadvs.util.mapping.ArrayToBeanMapper;
 
 import java.util.List;

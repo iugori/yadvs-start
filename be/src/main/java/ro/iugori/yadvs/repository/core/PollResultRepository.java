@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.repository;
+package ro.iugori.yadvs.repository.core;
 
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;

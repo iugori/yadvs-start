@@ -1,4 +1,4 @@
-package ro.iugori.yadvs.repository;
+package ro.iugori.yadvs.repository.core;
 
 import org.springframework.data.util.Pair;
 import ro.iugori.yadvs.model.criteria.QueryCriteria;

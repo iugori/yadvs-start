@@ -19,10 +19,10 @@ import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.rest.shared.Poll;
-import ro.iugori.yadvs.repository.PollHistoryRepository;
-import ro.iugori.yadvs.repository.PollRepository;
-import ro.iugori.yadvs.repository.PollRepositoryCustom;
-import ro.iugori.yadvs.repository.PollResultRepository;
+import ro.iugori.yadvs.repository.core.PollHistoryRepository;
+import ro.iugori.yadvs.repository.core.PollRepository;
+import ro.iugori.yadvs.repository.core.PollRepositoryCustom;
+import ro.iugori.yadvs.repository.core.PollResultRepository;
 import ro.iugori.yadvs.util.mapping.PollMapper;
 import ro.iugori.yadvs.util.time.TimeUtil;
 

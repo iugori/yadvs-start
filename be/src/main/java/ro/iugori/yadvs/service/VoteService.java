@@ -12,9 +12,9 @@ import ro.iugori.yadvs.model.error.ErrorCode;
 import ro.iugori.yadvs.model.error.ErrorModel;
 import ro.iugori.yadvs.model.error.TargetType;
 import ro.iugori.yadvs.model.rest.shared.Vote;
-import ro.iugori.yadvs.repository.PollOptionRepository;
-import ro.iugori.yadvs.repository.PollResultRepository;
-import ro.iugori.yadvs.repository.VoteRepository;
+import ro.iugori.yadvs.repository.core.PollOptionRepository;
+import ro.iugori.yadvs.repository.core.PollResultRepository;
+import ro.iugori.yadvs.repository.core.VoteRepository;
 import ro.iugori.yadvs.util.time.TimeUtil;
 
 import java.util.List;
