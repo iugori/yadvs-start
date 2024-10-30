@@ -1,12 +1,15 @@
 package ro.iugori.yadvs.util.criteria;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.model.criteria.ProjectionFilter;
 import ro.iugori.yadvs.util.text.TextUtil;
 
 import java.text.ParseException;
 
-public class ProjectionFilterParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProjectionFilterUtil {
 
     public static ProjectionFilter parse(String script) throws ParseException {
         var projector = new ProjectionFilter();

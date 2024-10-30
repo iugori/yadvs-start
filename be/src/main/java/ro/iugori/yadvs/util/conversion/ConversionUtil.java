@@ -1,5 +1,7 @@
 package ro.iugori.yadvs.util.conversion;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.util.ArrayList;
@@ -7,7 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConversionUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ConversionUtil {
 
     private static final DefaultConversionService conversionService = new DefaultConversionService();
 

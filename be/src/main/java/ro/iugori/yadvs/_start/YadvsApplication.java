@@ -18,7 +18,6 @@ import java.util.Optional;
         ro.iugori.yadvs.config.RestExceptionHandler.class,
         ro.iugori.yadvs.service.PollService.class,
         ro.iugori.yadvs.web.rest.PollResource.class,
-
 })
 @EnableJpaRepositories(basePackageClasses = ro.iugori.yadvs.repository.PollRepository.class)
 @EntityScan(basePackageClasses = ro.iugori.yadvs.model.entity.PollEntity.class)

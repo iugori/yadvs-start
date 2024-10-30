@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.criteria.SortOrderParser;
+import ro.iugori.yadvs.util.criteria.SortOrderUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class SortOrder implements Iterable<SortOrder.Field> {
         private Direction direction;
 
         public static Field parse(String script) throws ParseException {
-            return SortOrderParser.parse(script);
+            return SortOrderUtil.parse(script);
         }
 
         @Override

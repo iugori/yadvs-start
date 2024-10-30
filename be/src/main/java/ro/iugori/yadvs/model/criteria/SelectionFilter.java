@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ro.iugori.yadvs.util.criteria.SelectionFilterParser;
+import ro.iugori.yadvs.util.criteria.SelectionFilterUtil;
 import ro.iugori.yadvs.util.rest.RestApi;
 
 import java.text.ParseException;
@@ -58,11 +58,11 @@ public class SelectionFilter implements Iterable<SelectionFilter.Predicate> {
         private Object value;
 
         public static Predicate parse(String script) throws ParseException {
-            return SelectionFilterParser.parse(script);
+            return SelectionFilterUtil.parse(script);
         }
 
         public static Predicate parse(String script, Object value) throws ParseException {
-            return SelectionFilterParser.parse(script, value);
+            return SelectionFilterUtil.parse(script, value);
         }
 
         @Override

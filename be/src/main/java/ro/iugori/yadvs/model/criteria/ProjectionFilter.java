@@ -1,6 +1,6 @@
 package ro.iugori.yadvs.model.criteria;
 
-import ro.iugori.yadvs.util.criteria.ProjectionFilterParser;
+import ro.iugori.yadvs.util.criteria.ProjectionFilterUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class ProjectionFilter implements Iterable<String> {
     private final List<String> fields = new ArrayList<>();
 
     public static ProjectionFilter parse(String script) throws ParseException {
-        return ProjectionFilterParser.parse(script);
+        return ProjectionFilterUtil.parse(script);
     }
 
     @Override

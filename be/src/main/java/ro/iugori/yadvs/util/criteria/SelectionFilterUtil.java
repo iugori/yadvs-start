@@ -1,5 +1,7 @@
 package ro.iugori.yadvs.util.criteria;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import ro.iugori.yadvs.model.criteria.SelectionFilter;
 import ro.iugori.yadvs.util.rest.RestApi;
@@ -7,7 +9,8 @@ import ro.iugori.yadvs.util.text.TextUtil;
 
 import java.text.ParseException;
 
-public class SelectionFilterParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SelectionFilterUtil {
 
     public static SelectionFilter.Predicate parse(String script) throws ParseException {
         script = StringUtils.trimToEmpty(script);

@@ -1,9 +1,13 @@
 package ro.iugori.yadvs.util.reflection;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-public class ReflectionUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReflectionUtil {
 
     public static Optional<Field> getDeclaredField(Class<?> clazz, String name) {
         Field field = null;
